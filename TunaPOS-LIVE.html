@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TunaPOS</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --api:http://44.244.98.236;
+  --void:#020305;--deep:#05070d;--surface:#090c14;--raised:#0e1219;
+  --card:#121820;--edge:#181f2e;
+  --rim:rgba(255,255,255,0.05);--rim2:rgba(255,255,255,0.09);
+  --neural:#00d4ff;--neural-dim:rgba(0,212,255,0.1);
+  --pulse:#7b2fff;--bio:#00ff9d;--bio-dim:rgba(0,255,157,0.08);
+  --amber:#ffb547;--amber-dim:rgba(255,181,71,0.1);
+  --danger:#ff4b6e;--danger-dim:rgba(255,75,110,0.1);
+  --gold:#d4af37;
+  --txt:#dde5f0;--txt2:#7a8a9e;--txt3:#3d4f62;
+  --r:10px;--r-sm:7px;--r-xs:4px;
+}
+html,body{height:100%;background:var(--void);color:var(--txt);font-family:"Instrument Sans",sans-serif;overflow:hidden;font-size:13px}
+
+/* LOGIN */
+.login-screen{position:fixed;inset:0;background:var(--void);z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0}
+.login-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(0,212,255,0.06) 0%,transparent 60%),radial-gradient(ellipse at 70% 50%,rgba(123,47,255,0.06) 0%,transparent 60%)}
+.login-box{position:relative;z-index:1;width:420px;background:var(--card);border:1px solid var(--rim2);border-radius:16px;padding:36px;box-shadow:0 40px 80px rgba(0,0,0,0.7)}
+.login-logo{text-align:center;margin-bottom:28px}
+.lm{width:60px;height:60px;border-radius:14px;background:linear-gradient(135deg,var(--neural),var(--pulse));display:inline-flex;align-items:center;justify-content:center;font-family:"Syne",sans-serif;font-weight:800;font-size:24px;color:#fff;margin-bottom:12px;box-shadow:0 0 40px rgba(0,212,255,0.3)}
+.login-title{font-family:"Syne",sans-serif;font-size:26px;font-weight:800;letter-spacing:-0.02em}
+.login-sub{font-size:11px;color:var(--txt3);margin-top:4px}
+.tier-select{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:20px}
+.tier-btn{padding:10px 6px;border-radius:var(--r-sm);border:1px solid var(--rim);background:var(--raised);cursor:pointer;text-align:center;transition:all .15s;font-family:inherit}
+.tier-btn:hover{border-color:var(--rim2)}
+.tier-btn.on{border-color:rgba(0,212,255,0.5);background:var(--neural-dim)}
+.tier-icon{font-size:20px;margin-bottom:4px}
+.tier-name{font-size:10px;font-weight:700;color:var(--txt2)}
+.tier-btn.on .tier-name{color:var(--neural)}
+.tier-desc{font-size:8px;color:var(--txt3);margin-top:2px}
+.login-form{display:flex;flex-direction:column;gap:10px}
+.lf-label{font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--txt3);margin-bottom:3px}
+.lf-input{width:100%;background:var(--raised);border:1px solid var(--rim);border-radius:var(--r-sm);padding:11px 12px;color:var(--txt);font-family:inherit;font-size:12px;outline:none;transition:border-color .2s}
+.lf-input:focus{border-color:rgba(0,212,255,0.4)}
+.login-btn{width:100%;padding:14px;border-radius:var(--r-sm);border:none;background:linear-gradient(135deg,var(--neural),var(--pulse));color:#fff;font-family:"Syne",sans-serif;font-weight:800;font-size:15px;cursor:pointer;margin-top:4px;letter-spacing:-0.01em;transition:all .2s}
+.login-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.api-status{text-align:center;margin-top:14px;font-size:9px;font-family:"JetBrains Mono",monospace;display:flex;align-items:center;justify-content:center;gap:6px}
+.api-dot{width:6px;height:6px;border-radius:50%}
+
+/* SHELL */
+.shell{display:grid;grid-template-columns:60px 1fr;grid-template-rows:50px 1fr;height:100vh}
+.topbar{grid-column:1/-1;background:var(--deep);border-bottom:1px solid var(--rim);display:flex;align-items:center;padding:0 16px;gap:12px}
+.tb-logo{width:32px;height:32px;border-radius:7px;background:linear-gradient(135deg,var(--neural),var(--pulse));display:flex;align-items:center;justify-content:center;font-family:"Syne",sans-serif;font-weight:800;font-size:14px;color:#fff}
+.tb-name{font-family:"Syne",sans-serif;font-weight:800;font-size:14px}
+.tb-loc{font-size:10px;color:var(--txt3)}
+.tb-tier{padding:3px 10px;border-radius:99px;font-size:9px;font-weight:700;font-family:"JetBrains Mono",monospace;letter-spacing:0.06em}
+.tier-small{background:var(--bio-dim);border:1px solid rgba(0,255,157,0.3);color:var(--bio)}
+.tier-chain{background:var(--neural-dim);border:1px solid rgba(0,212,255,0.3);color:var(--neural)}
+.tier-enterprise{background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:var(--gold)}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.api-pill{display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:99px;font-size:8px;font-weight:600;font-family:"JetBrains Mono",monospace}
+.api-live{border:1px solid rgba(0,255,157,0.3);background:var(--bio-dim);color:var(--bio)}
+.api-err{border:1px solid rgba(255,75,110,0.3);background:var(--danger-dim);color:var(--danger)}
+.api-blink{width:4px;height:4px;border-radius:50%;animation:blink 1.5s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.clock{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--txt2);padding:3px 8px;background:var(--raised);border:1px solid var(--rim);border-radius:var(--r-xs)}
+.logout-btn{padding:4px 10px;border-radius:var(--r-xs);border:1px solid var(--rim);background:transparent;color:var(--txt3);font-size:9px;cursor:pointer;font-family:inherit;transition:all .15s}
+.logout-btn:hover{color:var(--danger);border-color:rgba(255,75,110,0.3)}
+
+/* SIDE NAV */
+.sidenav{background:var(--deep);border-right:1px solid var(--rim);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:2px;overflow:hidden}
+.sn{width:44px;height:44px;border-radius:var(--r-sm);border:none;background:transparent;color:var(--txt3);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:all .15s;position:relative;font-family:inherit}
+.sn:hover{background:var(--raised);color:var(--txt2)}
+.sn.on{background:var(--neural-dim);color:var(--neural)}
+.sn.on::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:2px;height:20px;background:var(--neural);border-radius:0 2px 2px 0}
+.sn svg{width:16px;height:16px}
+.sn-lbl{font-size:7px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase}
+.sn-sep{width:26px;height:1px;background:var(--rim);margin:3px 0}
+.sn-push{flex:1}
+.sn-hidden{display:none}
+
+/* SCREENS */
+.screens{overflow:hidden;position:relative}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}
+.screen.on{display:flex}
+.scr-scroll{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px}
+.scr-scroll::-webkit-scrollbar{width:3px}
+.scr-scroll::-webkit-scrollbar-thumb{background:var(--edge)}
+
+/* POS SCREEN */
+.pos-layout{display:grid;grid-template-columns:280px 1fr 300px;height:100%;overflow:hidden}
+
+/* LEFT PANEL */
+.pos-left{background:var(--deep);border-right:1px solid var(--rim);display:flex;flex-direction:column;padding:12px;gap:10px;overflow-y:auto}
+.pos-left::-webkit-scrollbar{width:0}
+.venue-select{background:var(--raised);border:1px solid var(--rim);border-radius:var(--r-sm);padding:8px 10px;color:var(--txt);font-family:inherit;font-size:11px;outline:none;width:100%;cursor:pointer}
+.section-lbl{font-size:8px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--txt3);margin-bottom:4px}
+.table-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.tbl-btn{padding:10px 6px;border-radius:var(--r-sm);border:1px solid var(--rim);background:var(--raised);cursor:pointer;text-align:center;transition:all .15s;font-family:inherit}
+.tbl-btn:hover{border-color:var(--rim2)}
+.tbl-btn.active{border-color:rgba(0,212,255,0.5);background:var(--neural-dim)}
+.tbl-btn.on{border-color:rgba(0,255,157,0.5);background:var(--bio-dim)}
+.tbl-num{font-family:"Syne",sans-serif;font-size:16px;font-weight:800;color:var(--txt)}
+.tbl-btn.active .tbl-num{color:var(--neural)}
+.tbl-btn.on .tbl-num{color:var(--bio)}
+.tbl-status{font-size:8px;color:var(--txt3)}
+.order-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+.order-list::-webkit-scrollbar{width:0}
+.order-item{display:flex;align-items:center;gap:8px;padding:7px 8px;background:var(--raised);border:1px solid var(--rim);border-radius:var(--r-xs)}
+.oi-name{flex:1;font-size:11px;font-weight:600}
+.oi-price{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--bio);font-weight:600}
+.oi-rm{width:18px;height:18px;border-radius:3px;border:1px solid var(--rim);background:transparent;color:var(--txt3);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.oi-rm:hover{border-color:rgba(255,75,110,0.4);color:var(--danger)}
+.order-total-row{display:flex;justify-content:space-between;padding:6px 0;font-size:10px;color:var(--txt3)}
+.order-grand{display:flex;justify-content:space-between;padding-top:6px;border-top:1px solid var(--rim);font-size:13px;font-weight:700}
+.order-grand span:last-child{color:var(--bio)}
+.pay-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pay-btn{padding:10px;border-radius:var(--r-sm);border:none;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;text-align:center}
+.pay-card{background:linear-gradient(135deg,var(--neural),var(--pulse));color:#fff}
+.pay-cash{background:var(--bio-dim);border:1px solid rgba(0,255,157,0.3);color:var(--bio)}
+.charge-btn{grid-column:1/-1;padding:12px;border-radius:var(--r-sm);border:none;background:linear-gradient(135deg,var(--neural),var(--pulse));color:#fff;font-family:"Syne",sans-serif;font-weight:800;font-size:14px;cursor:pointer;transition:all .15s}
+.charge-btn:hover{filter:brightness(1.1)}
+.charge-btn:disabled{background:var(--edge);color:var(--txt3);cursor:not-allowed}
+.print-btn{width:100%;padding:8px;border-radius:var(--r-sm);border:1px solid var(--rim);background:transparent;color:var(--txt3);font-family:inherit;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.print-btn:hover{border-color:var(--rim2);color:var(--txt)}
+
+/* CENTER - MENU */
+.pos-center{display:flex;flex-direction:column;overflow:hidden}
+.menu-cats{display:flex;gap:4px;padding:10px 12px;border-bottom:1px solid var(--rim);overflow-x:auto;flex-shrink:0}
+.menu-cats::-webkit-scrollbar{display:none}
+.cat-btn{padding:6px 14px;border-radius:99px;border:1px solid var(--rim);background:transparent;color:var(--txt3);font-size:10px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:inherit}
+.cat-btn:hover{border-color:var(--rim2);color:var(--txt2)}
+.cat-btn.on{border-color:rgba(0,212,255,0.4);background:var(--neural-dim);color:var(--neural)}
+.menu-search{padding:8px 12px;border-bottom:1px solid var(--rim);flex-shrink:0}
+.menu-search input{width:100%;background:var(--raised);border:1px solid var(--rim);border-radius:var(--r-sm);padding:7px 12px;color:var(--txt);font-family:inherit;font-size:11px;outline:none}
+.menu-search input:focus{border-color:rgba(0,212,255,0.3)}
+.menu-items{flex:1;overflow-y:auto;padding:10px 12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;align-content:start}
+.menu-items::-webkit-scrollbar{width:3px}
+.menu-items::-webkit-scrollbar-thumb{background:var(--edge)}
+.menu-item{background:var(--card);border:1px solid var(--rim);border-radius:var(--r-sm);padding:12px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.menu-item:hover{border-color:var(--neural);transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,212,255,0.1)}
+.menu-item:active{transform:scale(0.97)}
+.mi-icon{font-size:24px;margin-bottom:8px}
+.mi-name{font-size:11px;font-weight:700;margin-bottom:2px;line-height:1.2}
+.mi-cat{font-size:8px;color:var(--txt3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px}
+.mi-price{font-family:"Syne",sans-serif;font-size:16px;font-weight:800;color:var(--bio)}
+.mi-add{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:var(--neural-dim);border:1px solid rgba(0,212,255,0.3);color:var(--neural);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.menu-loading{display:flex;align-items:center;justify-content:center;height:200px;color:var(--txt3);font-size:12px;gap:8px}
+.spinner{width:16px;height:16px;border:2px solid var(--rim2);border-top-color:var(--neural);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* RIGHT - KDS / STATUS */
+.pos-right{background:var(--deep);border-left:1px solid var(--rim);display:flex;flex-direction:column;overflow:hidden}
+.pr-tabs{display:flex;border-bottom:1px solid var(--rim);flex-shrink:0}
+.pr-tab{flex:1;padding:10px;text-align:center;font-size:10px;font-weight:600;color:var(--txt3);cursor:pointer;transition:all .15s;border:none;background:transparent;font-family:inherit;border-bottom:2px solid transparent}
+.pr-tab.on{color:var(--neural);border-bottom-color:var(--neural)}
+.pr-content{flex:1;overflow-y:auto;padding:10px}
+.pr-content::-webkit-scrollbar{width:3px}
+.pr-content::-webkit-scrollbar-thumb{background:var(--edge)}
+.kds-order{background:var(--card);border:1px solid var(--rim);border-radius:var(--r-sm);padding:10px;margin-bottom:8px}
+.kds-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.kds-id{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--neural);font-weight:600}
+.kds-time{font-size:9px;color:var(--txt3)}
+.kds-items{display:flex;flex-direction:column;gap:3px}
+.kds-item{font-size:10px;color:var(--txt2);padding:3px 0;border-bottom:1px solid var(--rim)}
+.kds-item:last-child{border-bottom:none}
+.kds-bump{width:100%;margin-top:8px;padding:6px;border-radius:var(--r-xs);border:1px solid rgba(0,255,157,0.3);background:var(--bio-dim);color:var(--bio);font-size:9px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+.kds-bump:hover{background:rgba(0,255,157,0.15)}
+.ws-status{font-size:9px;color:var(--txt3);padding:6px;text-align:center;font-family:"JetBrains Mono",monospace}
+
+/* SECTION TITLE */
+.sec{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--txt3);display:flex;align-items:center;gap:10px}
+.sec-line{flex:1;height:1px;background:var(--rim)}
+
+/* BACK OFFICE */
+.bo-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.bo-kpi{background:var(--card);border:1px solid var(--rim);border-radius:var(--r);padding:14px;position:relative;overflow:hidden}
+.bo-kpi::after{content:"";position:absolute;top:0;left:0;right:0;height:2px}
+.bo-kpi.c1::after{background:var(--neural)}.bo-kpi.c2::after{background:var(--bio)}.bo-kpi.c3::after{background:var(--amber)}.bo-kpi.c4::after{background:var(--pulse)}
+.kpi-lbl{font-size:8px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--txt3);margin-bottom:6px}
+.kpi-val{font-family:"Syne",sans-serif;font-size:28px;font-weight:800;letter-spacing:-0.03em;line-height:1}
+.kpi-sub{font-size:9px;color:var(--txt3);margin-top:4px}
+.orders-table{background:var(--card);border:1px solid var(--rim);border-radius:var(--r);overflow:hidden}
+.ot-head{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;padding:8px 14px;border-bottom:1px solid var(--rim);background:var(--raised)}
+.ot-hcell{font-size:8px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--txt3)}
+.ot-row{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;padding:9px 14px;border-bottom:1px solid var(--rim);transition:background .12s;cursor:pointer}
+.ot-row:last-child{border-bottom:none}
+.ot-row:hover{background:var(--raised)}
+.ot-cell{font-size:11px;display:flex;align-items:center}
+.pill{padding:2px 7px;border-radius:3px;font-size:8px;font-weight:600;font-family:"JetBrains Mono",monospace}
+.p-ok{background:var(--bio-dim);color:var(--bio)}
+.p-pend{background:var(--amber-dim);color:var(--amber)}
+
+/* TOAST */
+.toast{position:fixed;bottom:18px;right:18px;background:var(--card);border:1px solid var(--rim2);border-radius:var(--r-sm);padding:10px 16px;font-size:11px;font-weight:500;z-index:9999;transform:translateY(50px);opacity:0;transition:all .25s;box-shadow:0 10px 30px rgba(0,0,0,0.5);max-width:320px}
+.toast.show{transform:none;opacity:1}
+.toast.ok{border-color:rgba(0,255,157,0.3);color:var(--bio)}
+.toast.info{border-color:rgba(0,212,255,0.3);color:var(--neural)}
+.toast.warn{border-color:rgba(255,181,71,0.3);color:var(--amber)}
+.toast.err{border-color:rgba(255,75,110,0.3);color:var(--danger)}
+@keyframes fadeup{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.fadein{animation:fadeup .22s ease-out}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="login-screen">
+  <div class="login-bg"></div>
+  <div class="login-box fadein">
+    <div class="login-logo">
+      <div class="lm">T</div>
+      <div class="login-title">TunaPOS</div>
+      <div class="login-sub">Adaptive Intelligence Commerce · Pioneer Enterprise Solutions</div>
+    </div>
+
+    <div class="tier-select" id="tier-select">
+      <button class="tier-btn on" onclick="setTier('small',this)">
+        <div class="tier-icon">🍽️</div>
+        <div class="tier-name">Restaurant</div>
+        <div class="tier-desc">1–3 locations</div>
+      </button>
+      <button class="tier-btn" onclick="setTier('chain',this)">
+        <div class="tier-icon">🏪</div>
+        <div class="tier-name">Chain</div>
+        <div class="tier-desc">4–50 locations</div>
+      </button>
+      <button class="tier-btn" onclick="setTier('enterprise',this)">
+        <div class="tier-icon">🏢</div>
+        <div class="tier-name">Enterprise</div>
+        <div class="tier-desc">Franchise HQ</div>
+      </button>
+    </div>
+
+    <div class="login-form">
+      <div>
+        <div class="lf-label">Email</div>
+        <input class="lf-input" id="li-email" placeholder="owner@restaurant.com" value="owner@tunapos.com">
+      </div>
+      <div>
+        <div class="lf-label">Password</div>
+        <input class="lf-input" type="password" id="li-pass" placeholder="••••••••" value="••••••••">
+      </div>
+      <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    </div>
+
+    <div class="api-status" id="api-status">
+      <div class="api-dot" id="api-dot" style="background:var(--amber)"></div>
+      <span id="api-status-txt" style="color:var(--txt3)">Connecting to backend...</span>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="shell" id="main-app" style="display:none">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="tb-logo">T</div>
+    <div>
+      <div class="tb-name">TunaPOS</div>
+      <div class="tb-loc" id="tb-loc">Loading...</div>
+    </div>
+    <div class="tb-tier" id="tb-tier">—</div>
+    <div class="tb-right">
+      <div class="api-pill api-live" id="api-pill">
+        <div class="api-blink" style="background:var(--bio)"></div>
+        <span id="api-pill-txt">LIVE</span>
+      </div>
+      <div class="clock" id="clock">--:--:--</div>
+      <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- SIDE NAV -->
+  <nav class="sidenav" id="sidenav">
+    <button class="sn on" onclick="goto('pos')" id="sni-pos" title="POS">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      <span class="sn-lbl">POS</span>
+    </button>
+    <button class="sn" onclick="goto('kds')" id="sni-kds" title="Kitchen">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
+      <span class="sn-lbl">KDS</span>
+    </button>
+    <button class="sn" onclick="goto('backoffice')" id="sni-backoffice" title="Back Office">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+      <span class="sn-lbl">Office</span>
+    </button>
+    <div class="sn-sep"></div>
+    <!-- Chain+ only -->
+    <button class="sn sn-hidden" onclick="goto('inventory')" id="sni-inventory" title="Inventory">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 3H8l-2 4h12z"/></svg>
+      <span class="sn-lbl">Stock</span>
+    </button>
+    <!-- Enterprise only -->
+    <button class="sn sn-hidden" onclick="goto('hq')" id="sni-hq" title="HQ">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span class="sn-lbl">HQ</span>
+    </button>
+    <div class="sn-push"></div>
+    <button class="sn" onclick="goto('settings')" id="sni-settings" title="Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <span class="sn-lbl">Config</span>
+    </button>
+  </nav>
+
+  <!-- SCREENS -->
+  <div class="screens">
+
+    <!-- POS -->
+    <div class="screen on" id="sc-pos">
+      <div class="pos-layout">
+
+        <!-- LEFT: Tables + Order -->
+        <div class="pos-left">
+          <div>
+            <div class="section-lbl">Venue</div>
+            <select class="venue-select" onchange="showToast('Venue: '+this.value,'info')">
+              <option>Fine Dining — Main Hall</option>
+              <option>Bar — Tap Room</option>
+              <option>Patio — Outdoor</option>
+            </select>
+          </div>
+          <div>
+            <div class="section-lbl">Tables</div>
+            <div class="table-grid" id="table-grid"></div>
+          </div>
+          <div class="section-lbl">Current Order — Table <span id="current-table-lbl">1</span></div>
+          <div class="order-list" id="order-list">
+            <div style="text-align:center;padding:20px;color:var(--txt3);font-size:11px">Tap menu items to add</div>
+          </div>
+          <div id="order-totals" style="display:none">
+            <div class="order-total-row"><span>Subtotal</span><span id="ot-sub">$0.00</span></div>
+            <div class="order-total-row"><span>Tax 8%</span><span id="ot-tax">$0.00</span></div>
+            <div class="order-grand"><span>TOTAL</span><span id="ot-total">$0.00</span></div>
+          </div>
+          <div class="pay-btns" id="pay-btns" style="display:none">
+            <button class="pay-btn pay-card" onclick="processPayment('card')">💳 Card</button>
+            <button class="pay-btn pay-cash" onclick="processPayment('cash')">💵 Cash</button>
+            <button class="charge-btn" id="charge-btn" onclick="submitOrder()">Send Order + Charge</button>
+            <button class="print-btn" onclick="printReceipt()">🖨️ Print Receipt → Volcora 10.0.0.2</button>
+          </div>
+        </div>
+
+        <!-- CENTER: Menu -->
+        <div class="pos-center">
+          <div class="menu-cats" id="menu-cats">
+            <button class="cat-btn on" onclick="filterCat('all',this)">All</button>
+          </div>
+          <div class="menu-search">
+            <input placeholder="Search menu..." oninput="searchMenu(this.value)" id="menu-search-input">
+          </div>
+          <div class="menu-items" id="menu-items">
+            <div class="menu-loading"><div class="spinner"></div> Loading menu from backend...</div>
+          </div>
+        </div>
+
+        <!-- RIGHT: KDS Feed -->
+        <div class="pos-right">
+          <div class="pr-tabs">
+            <button class="pr-tab on" onclick="setPRTab('kds',this)">Kitchen</button>
+            <button class="pr-tab" onclick="setPRTab('recent',this)">Orders</button>
+          </div>
+          <div class="pr-content" id="pr-kds">
+            <div class="ws-status" id="ws-status">⚡ Connecting to KDS...</div>
+            <div id="kds-feed"></div>
+          </div>
+          <div class="pr-content" id="pr-recent" style="display:none">
+            <div id="recent-orders-feed"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- KDS FULL SCREEN -->
+    <div class="screen" id="sc-kds">
+      <div class="scr-scroll">
+        <div class="sec"><span>Kitchen Display System</span><div class="sec-line"></div>
+          <span style="font-size:9px;color:var(--txt3)" id="kds-ws-lbl">WebSocket: ws://44.244.98.236/ws/kitchen</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px" id="kds-full-feed">
+          <div style="color:var(--txt3);font-size:11px;padding:20px">No orders yet — KDS waiting for orders...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BACK OFFICE -->
+    <div class="screen" id="sc-backoffice">
+      <div class="scr-scroll">
+        <div class="sec"><span>Back Office</span><div class="sec-line"></div>
+          <span style="font-size:9px;color:var(--bio)" id="bo-live-lbl">Live from backend</span>
+        </div>
+        <div class="bo-kpis fadein" id="bo-kpis"></div>
+        <div class="sec"><span>Recent Orders</span><div class="sec-line"></div>
+          <button style="padding:5px 10px;border-radius:var(--r-xs);border:1px solid var(--rim);background:transparent;color:var(--txt3);font-size:9px;cursor:pointer;font-family:inherit" onclick="loadBackOffice()">↻ Refresh</button>
+        </div>
+        <div class="orders-table fadein">
+          <div class="ot-head">
+            <div class="ot-hcell">Order ID</div>
+            <div class="ot-hcell">Items</div>
+            <div class="ot-hcell">Total</div>
+            <div class="ot-hcell">Time</div>
+            <div class="ot-hcell">Status</div>
+          </div>
+          <div id="bo-orders"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVENTORY (chain+) -->
+    <div class="screen" id="sc-inventory">
+      <div class="scr-scroll">
+        <div class="sec"><span>Inventory</span><div class="sec-line"></div></div>
+        <div style="background:var(--card);border:1px solid var(--rim);border-radius:var(--r);padding:20px;text-align:center;color:var(--txt3)">
+          <div style="font-size:24px;margin-bottom:8px">📦</div>
+          <div style="font-size:12px;margin-bottom:4px">Inventory module ready</div>
+          <div style="font-size:10px">Add inventory endpoints to your FastAPI backend to activate</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HQ (enterprise) -->
+    <div class="screen" id="sc-hq">
+      <div class="scr-scroll">
+        <div class="sec"><span>Franchise HQ Command Center</span><div class="sec-line"></div></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px" id="hq-kpis" class="fadein"></div>
+        <div class="sec"><span>All Locations</span><div class="sec-line"></div></div>
+        <div id="hq-locations" class="fadein"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="screen" id="sc-settings">
+      <div class="scr-scroll">
+        <div class="sec"><span>System Configuration</span><div class="sec-line"></div></div>
+        <div style="background:var(--card);border:1px solid var(--rim);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:10px" class="fadein">
+          <div style="font-size:11px;font-weight:700;color:var(--txt2);margin-bottom:6px">Backend Connection</div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--rim);font-size:10px"><span style="color:var(--txt3)">API Endpoint</span><span style="font-family:'JetBrains Mono',monospace;color:var(--neural)">http://44.244.98.236/api</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--rim);font-size:10px"><span style="color:var(--txt3)">WebSocket KDS</span><span style="font-family:'JetBrains Mono',monospace;color:var(--neural)">ws://44.244.98.236/ws/kitchen</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--rim);font-size:10px"><span style="color:var(--txt3)">Volcora Printer</span><span style="font-family:'JetBrains Mono',monospace;color:var(--bio)">10.0.0.2:9100 ESC/POS</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--rim);font-size:10px"><span style="color:var(--txt3)">Payment Gateway</span><span style="font-family:'JetBrains Mono',monospace;color:var(--amber)">North America Bankcard — Tomorrow</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:10px"><span style="color:var(--txt3)">Backend Status</span><span id="settings-api-status" style="font-family:'JetBrains Mono',monospace;color:var(--bio)">Checking...</span></div>
+          <button style="padding:10px;border-radius:var(--r-sm);border:1px solid rgba(0,212,255,0.3);background:var(--neural-dim);color:var(--neural);font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;margin-top:6px" onclick="checkAPI()">Test Backend Connection</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────
+const API = 'http://44.244.98.236';
+const WS_URL = 'ws://44.244.98.236/ws/kitchen';
+
+// ── STATE ─────────────────────────────────────────────────────────
+let MENU = [];
+let ORDER = [];
+let currentTable = 1;
+let currentTier = 'small';
+let ws = null;
+let kdsOrders = [];
+let allOrders = [];
+
+// ── API CALLS — REAL BACKEND ──────────────────────────────────────
+async function fetchMenu() {
+  try {
+    const r = await fetch(`${API}/api/items`);
+    const d = await r.json();
+    MENU = d.items || [];
+    renderMenu(MENU);
+    renderMenuCats();
+    setAPIStatus(true);
+    return true;
+  } catch(e) {
+    setAPIStatus(false);
+    document.getElementById('menu-items').innerHTML = 
+      `<div class="menu-loading" style="color:var(--danger)">⚠ Backend offline — ${e.message}</div>`;
+    return false;
+  }
+}
+
+async function createOrder(items, total) {
+  try {
+    const r = await fetch(`${API}/api/orders/create`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        items: items.map(i => ({name:i.name, price:i.price, quantity:i.qty||1})),
+        total,
+        table: currentTable,
+        timestamp: new Date().toISOString()
+      })
+    });
+    const d = await r.json();
+    return d;
+  } catch(e) {
+    showToast('Order API error: '+e.message, 'err');
+    return null;
+  }
+}
+
+async function printReceipt() {
+  if (!ORDER.length) { showToast('No items to print', 'warn'); return; }
+  const sub = ORDER.reduce((s,i) => s+i.price*(i.qty||1), 0);
+  const total = sub * 1.08;
+  try {
+    const r = await fetch(`${API}/api/print/vocora`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        items: ORDER.map(i => ({name:i.name, price:i.price*(i.qty||1)})),
+        total,
+        table: currentTable,
+        timestamp: new Date().toLocaleString()
+      })
+    });
+    const d = await r.json();
+    if (d.status === 'printed') {
+      showToast('✓ Receipt printed to Volcora 10.0.0.2:9100', 'ok');
+    } else {
+      showToast('Print error: '+d.message, 'err');
+    }
+  } catch(e) {
+    showToast('Printer error: '+e.message, 'err');
+  }
+}
+
+async function loadOrders() {
+  // Backend doesn't have GET /orders yet — show submitted orders from session
+  return allOrders;
+}
+
+// ── WEBSOCKET KDS ─────────────────────────────────────────────────
+function connectKDS() {
+  try {
+    ws = new WebSocket(WS_URL);
+    ws.onopen = () => {
+      document.getElementById('ws-status').textContent = '● KDS Connected — ws://44.244.98.236/ws/kitchen';
+      document.getElementById('ws-status').style.color = 'var(--bio)';
+      document.getElementById('kds-ws-lbl').textContent = '● WebSocket Live';
+      document.getElementById('kds-ws-lbl').style.color = 'var(--bio)';
+    };
+    ws.onmessage = (e) => {
+      try {
+        const msg = JSON.parse(e.data);
+        if (msg.type === 'new_order') {
+          kdsOrders.unshift(msg);
+          renderKDS();
+          showToast(`KDS: Order #${msg.order_id} received`, 'info');
+        }
+      } catch(err){}
+    };
+    ws.onerror = () => {
+      document.getElementById('ws-status').textContent = '⚠ KDS connection error — retrying...';
+      document.getElementById('ws-status').style.color = 'var(--amber)';
+    };
+    ws.onclose = () => {
+      document.getElementById('ws-status').textContent = '○ KDS disconnected — reconnecting...';
+      document.getElementById('ws-status').style.color = 'var(--txt3)';
+      setTimeout(connectKDS, 3000);
+    };
+  } catch(e) {
+    setTimeout(connectKDS, 5000);
+  }
+}
+
+// ── RENDER MENU ───────────────────────────────────────────────────
+const ICONS = {Meat:'🥩',Seafood:'🐟',Sandwiches:'🍔',Salads:'🥗',Sides:'🍟',Beverages:'🥤',default:'🍽️'};
+
+function renderMenu(items) {
+  if (!items.length) {
+    document.getElementById('menu-items').innerHTML = 
+      '<div class="menu-loading" style="color:var(--txt3)">No menu items found</div>';
+    return;
+  }
+  document.getElementById('menu-items').innerHTML = items.map(item => `
+    <div class="menu-item" onclick="addToOrder(${item.id})">
+      <div class="mi-icon">${ICONS[item.category]||ICONS.default}</div>
+      <div class="mi-name">${item.name}</div>
+      <div class="mi-cat">${item.category}</div>
+      <div class="mi-price">$${item.price.toFixed(2)}</div>
+      <div class="mi-add">+</div>
+    </div>`).join('');
+}
+
+function renderMenuCats() {
+  const cats = ['all', ...new Set(MENU.map(i => i.category))];
+  document.getElementById('menu-cats').innerHTML = cats.map((c,i) => 
+    `<button class="cat-btn ${i===0?'on':''}" onclick="filterCat('${c}',this)">${c==='all'?'All':c}</button>`
+  ).join('');
+}
+
+function filterCat(cat, btn) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  const filtered = cat === 'all' ? MENU : MENU.filter(i => i.category === cat);
+  renderMenu(filtered);
+}
+
+function searchMenu(q) {
+  const filtered = MENU.filter(i => i.name.toLowerCase().includes(q.toLowerCase()) || i.category.toLowerCase().includes(q.toLowerCase()));
+  renderMenu(filtered);
+}
+
+// ── ORDER MANAGEMENT ──────────────────────────────────────────────
+function addToOrder(itemId) {
+  const item = MENU.find(i => i.id === itemId);
+  if (!item) return;
+  const existing = ORDER.find(i => i.id === itemId);
+  if (existing) { existing.qty = (existing.qty||1) + 1; }
+  else { ORDER.push({...item, qty:1}); }
+  renderOrder();
+  showToast(item.name+' added', 'ok');
+}
+
+function removeFromOrder(idx) {
+  ORDER.splice(idx, 1);
+  renderOrder();
+}
+
+function renderOrder() {
+  const list = document.getElementById('order-list');
+  const totals = document.getElementById('order-totals');
+  const payBtns = document.getElementById('pay-btns');
+  if (!ORDER.length) {
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--txt3);font-size:11px">Tap menu items to add</div>';
+    totals.style.display = 'none';
+    payBtns.style.display = 'none';
+    return;
+  }
+  list.innerHTML = ORDER.map((item,i) => `
+    <div class="order-item">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);min-width:18px">${item.qty||1}×</span>
+      <span class="oi-name">${item.name}</span>
+      <span class="oi-price">$${((item.price)*(item.qty||1)).toFixed(2)}</span>
+      <button class="oi-rm" onclick="removeFromOrder(${i})">×</button>
+    </div>`).join('');
+  const sub = ORDER.reduce((s,i) => s+i.price*(i.qty||1), 0);
+  const tax = sub * 0.08;
+  document.getElementById('ot-sub').textContent = '$'+sub.toFixed(2);
+  document.getElementById('ot-tax').textContent = '$'+tax.toFixed(2);
+  document.getElementById('ot-total').textContent = '$'+(sub+tax).toFixed(2);
+  totals.style.display = '';
+  payBtns.style.display = 'grid';
+}
+
+async function submitOrder() {
+  if (!ORDER.length) { showToast('Add items first', 'warn'); return; }
+  const btn = document.getElementById('charge-btn');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+  const sub = ORDER.reduce((s,i) => s+i.price*(i.qty||1), 0);
+  const total = sub * 1.08;
+  const result = await createOrder(ORDER, total);
+  if (result && result.order_id) {
+    allOrders.unshift({
+      id: result.order_id,
+      items: ORDER.map(i=>i.name).join(', '),
+      total: total.toFixed(2),
+      time: new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),
+      status: 'sent'
+    });
+    showToast(`✓ Order #${result.order_id} sent to kitchen`, 'ok');
+    // Auto print
+    await printReceipt();
+    ORDER = [];
+    renderOrder();
+    renderRecentOrders();
+  } else {
+    showToast('Order failed — check backend', 'err');
+  }
+  btn.disabled = false;
+  btn.textContent = 'Send Order + Charge';
+}
+
+function processPayment(method) {
+  showToast(`${method.toUpperCase()} — North America Bankcard connects tomorrow`, 'info');
+}
+
+// ── TABLES ────────────────────────────────────────────────────────
+function renderTables() {
+  document.getElementById('table-grid').innerHTML = Array.from({length:9},(_,i)=>{
+    const n = i+1;
+    const cls = n===currentTable?'on':n===7?'active':'';
+    return `<button class="tbl-btn ${cls}" onclick="selectTable(${n})">
+      <div class="tbl-num">${n}</div>
+      <div class="tbl-status">${n===currentTable?'selected':n===7?'busy':'—'}</div>
+    </button>`;
+  }).join('');
+}
+
+function selectTable(n) {
+  currentTable = n;
+  document.getElementById('current-table-lbl').textContent = n;
+  renderTables();
+  showToast('Table '+n+' selected', 'info');
+}
+
+// ── KDS ───────────────────────────────────────────────────────────
+function renderKDS() {
+  const feed = document.getElementById('kds-feed');
+  const fullFeed = document.getElementById('kds-full-feed');
+  if (!kdsOrders.length) {
+    feed.innerHTML = '<div style="color:var(--txt3);font-size:10px;padding:10px">No orders yet</div>';
+    fullFeed.innerHTML = '<div style="color:var(--txt3);font-size:11px;padding:20px">No orders yet — KDS waiting...</div>';
+    return;
+  }
+  const html = kdsOrders.slice(0,10).map(o => `
+    <div class="kds-order">
+      <div class="kds-hd">
+        <span class="kds-id">Order #${o.order_id}</span>
+        <span class="kds-time">${new Date(o.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>
+      </div>
+      <div class="kds-items">
+        ${(o.items||[]).map(i=>`<div class="kds-item">${i.name} — $${i.price}</div>`).join('')}
+      </div>
+      <button class="kds-bump" onclick="bumpOrder(${o.order_id})">✓ BUMP</button>
+    </div>`).join('');
+  feed.innerHTML = html;
+  fullFeed.innerHTML = html;
+}
+
+function bumpOrder(id) {
+  kdsOrders = kdsOrders.filter(o => o.order_id !== id);
+  renderKDS();
+  showToast('Order #'+id+' bumped', 'ok');
+}
+
+function renderRecentOrders() {
+  const feed = document.getElementById('recent-orders-feed');
+  if (!allOrders.length) {
+    feed.innerHTML = '<div style="color:var(--txt3);font-size:10px;padding:10px">No orders this session</div>';
+    return;
+  }
+  feed.innerHTML = allOrders.map(o => `
+    <div style="background:var(--card);border:1px solid var(--rim);border-radius:var(--r-sm);padding:8px;margin-bottom:6px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--neural)">#${o.id}</span>
+        <span style="font-size:9px;color:var(--txt3)">${o.time}</span>
+      </div>
+      <div style="font-size:9px;color:var(--txt2);margin-bottom:4px">${o.items}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--bio)">$${o.total}</div>
+    </div>`).join('');
+}
+
+// ── BACK OFFICE ───────────────────────────────────────────────────
+function loadBackOffice() {
+  const sessionTotal = allOrders.reduce((s,o)=>s+parseFloat(o.total||0),0);
+  document.getElementById('bo-kpis').innerHTML = [
+    {lbl:'Session Revenue',val:'$'+sessionTotal.toFixed(2),sub:'This session',c:'c1'},
+    {lbl:'Orders Placed',val:allOrders.length,sub:'Via this terminal',c:'c2'},
+    {lbl:'Menu Items',val:MENU.length,sub:'From backend',c:'c3'},
+    {lbl:'KDS Queue',val:kdsOrders.length,sub:'Pending tickets',c:'c4'},
+  ].map(k=>`<div class="bo-kpi ${k.c}">
+    <div class="kpi-lbl">${k.lbl}</div>
+    <div class="kpi-val">${k.val}</div>
+    <div class="kpi-sub">${k.sub}</div>
+  </div>`).join('');
+  const tbody = document.getElementById('bo-orders');
+  if (!allOrders.length) {
+    tbody.innerHTML = '<div style="padding:20px;text-align:center;color:var(--txt3);font-size:11px">No orders yet this session</div>';
+    return;
+  }
+  tbody.innerHTML = allOrders.map(o=>`
+    <div class="ot-row">
+      <div class="ot-cell" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--neural)">#${o.id}</div>
+      <div class="ot-cell" style="font-size:10px;color:var(--txt2)">${o.items.substring(0,30)}...</div>
+      <div class="ot-cell" style="font-family:'JetBrains Mono',monospace;color:var(--bio);font-weight:600">$${o.total}</div>
+      <div class="ot-cell" style="font-size:10px;color:var(--txt3)">${o.time}</div>
+      <div class="ot-cell"><span class="pill p-ok">SENT</span></div>
+    </div>`).join('');
+}
+
+// ── HQ (Enterprise) ───────────────────────────────────────────────
+function loadHQ() {
+  document.getElementById('hq-kpis').innerHTML = [
+    {lbl:'Total Revenue',val:'$'+allOrders.reduce((s,o)=>s+parseFloat(o.total||0),0).toFixed(2),color:'var(--neural)'},
+    {lbl:'Active Terminals',val:'1',color:'var(--bio)'},
+    {lbl:'Locations Online',val:'1',color:'var(--amber)'},
+  ].map(k=>`<div style="background:var(--card);border:1px solid var(--rim);border-radius:var(--r);padding:16px;text-align:center">
+    <div style="font-size:9px;color:var(--txt3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px">${k.lbl}</div>
+    <div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:${k.color}">${k.val}</div>
+  </div>`).join('');
+  document.getElementById('hq-locations').innerHTML = `
+    <div style="background:var(--card);border:1px solid var(--rim);border-radius:var(--r);padding:14px;display:flex;align-items:center;gap:14px">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--bio);box-shadow:0 0 6px var(--bio)"></div>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:600">Fine Dining — Main Hall</div>
+        <div style="font-size:9px;color:var(--txt3)">44.244.98.236 · Volcora V1 · ESC/POS Printer 10.0.0.2</div>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--bio);font-weight:600">ONLINE</div>
+    </div>`;
+}
+
+// ── API STATUS ────────────────────────────────────────────────────
+function setAPIStatus(ok) {
+  const dot = document.getElementById('api-dot');
+  const txt = document.getElementById('api-status-txt');
+  const pill = document.getElementById('api-pill');
+  const pillTxt = document.getElementById('api-pill-txt');
+  if (ok) {
+    dot.style.background = 'var(--bio)';
+    txt.style.color = 'var(--bio)';
+    txt.textContent = '● Backend live — 44.244.98.236:8035';
+    pill.className = 'api-pill api-live';
+    pillTxt.textContent = 'LIVE';
+    document.getElementById('settings-api-status').textContent = 'ONLINE';
+  } else {
+    dot.style.background = 'var(--danger)';
+    txt.style.color = 'var(--danger)';
+    txt.textContent = '✗ Backend offline';
+    pill.className = 'api-pill api-err';
+    pillTxt.textContent = 'OFFLINE';
+    document.getElementById('settings-api-status').textContent = 'OFFLINE';
+  }
+}
+
+async function checkAPI() {
+  showToast('Testing backend...', 'info');
+  const ok = await fetchMenu();
+  showToast(ok ? '✓ Backend responding — menu loaded' : '✗ Backend not reachable', ok?'ok':'err');
+}
+
+// ── TIER SYSTEM ───────────────────────────────────────────────────
+function setTier(tier, btn) {
+  currentTier = tier;
+  document.querySelectorAll('.tier-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function applyTier(tier) {
+  // Show/hide nav items based on tier
+  const chainItems = ['sni-inventory'];
+  const enterpriseItems = ['sni-hq'];
+  chainItems.forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.classList.toggle('sn-hidden', tier==='small');
+  });
+  enterpriseItems.forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.classList.toggle('sn-hidden', tier!=='enterprise');
+  });
+  // Set tier badge
+  const badge = document.getElementById('tb-tier');
+  if(tier==='small'){badge.textContent='RESTAURANT';badge.className='tb-tier tier-small';}
+  else if(tier==='chain'){badge.textContent='CHAIN';badge.className='tb-tier tier-chain';}
+  else{badge.textContent='ENTERPRISE';badge.className='tb-tier tier-enterprise';}
+}
+
+// ── LOGIN / LOGOUT ────────────────────────────────────────────────
+async function doLogin() {
+  document.querySelector('.login-btn').textContent = 'Connecting...';
+  const ok = await fetchMenu();
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'grid';
+  document.getElementById('tb-loc').textContent = 'Fine Dining — Main Hall · 44.244.98.236';
+  applyTier(currentTier);
+  renderTables();
+  connectKDS();
+  renderKDS();
+  renderRecentOrders();
+  showToast('Welcome to TunaPOS · Menu loaded from backend', 'ok');
+  document.querySelector('.login-btn').textContent = 'Sign In →';
+}
+
+function doLogout() {
+  if(ws) ws.close();
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────
+const SCREENS = ['pos','kds','backoffice','inventory','hq','settings'];
+function goto(id) {
+  SCREENS.forEach(s => {
+    document.getElementById('sc-'+s)?.classList.toggle('on', s===id);
+    document.getElementById('sni-'+s)?.classList.toggle('on', s===id);
+  });
+  if(id==='backoffice') loadBackOffice();
+  if(id==='hq') loadHQ();
+}
+
+function setPRTab(tab, btn) {
+  document.querySelectorAll('.pr-tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('pr-kds').style.display = tab==='kds'?'':'none';
+  document.getElementById('pr-recent').style.display = tab==='recent'?'':'none';
+  if(tab==='recent') renderRecentOrders();
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast'+(type?' '+type:'');
+  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// ── CLOCK ─────────────────────────────────────────────────────────
+function tick(){document.getElementById('clock').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+setInterval(tick,1000);tick();
+
+// ── INIT — check backend on load ──────────────────────────────────
+window.addEventListener('load', async () => {
+  const ok = await fetchMenu();
+  if(ok){
+    document.getElementById('api-dot').style.background='var(--bio)';
+    document.getElementById('api-status-txt').textContent='● Backend live — tap Sign In';
+    document.getElementById('api-status-txt').style.color='var(--bio)';
+  }
+});
+
+console.log('%c🚀 TunaPOS LIVE — Real Backend Connected','color:#00d4ff;font-size:14px;font-weight:bold');
+console.log('%cAPI: http://44.244.98.236 | KDS: ws://44.244.98.236/ws/kitchen | Printer: 10.0.0.2:9100','color:#00ff9d;font-size:11px');
+</script>
+</body>
+</html>
