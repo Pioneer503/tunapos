@@ -10970,6 +10970,7 @@ function switchModule(mod) {
   try{if(mod==='backoffice'&&typeof BO_goto==='function')BO_goto('dashboard');}catch(e){}
   try{if(mod==='inventory'&&typeof INV_renderKPIs==='function'){INV_renderKPIs();INV_renderTable('all');}}catch(e){}
   try{if(mod==='hq'&&typeof HQ_renderBrands==='function'){HQ_renderBrands();HQ_renderRegions();}}catch(e){}
+  if(mod==='pos'){setTimeout(function(){try{loadRealMenu();fixPOSNav();}catch(e){console.warn(e);}},500);}
 }
 
 function tunaLogout() {
@@ -11308,6 +11309,73 @@ function closeSplitTender() {
   });
 })();
 
+
+// ═══ LOAD REAL MENU FROM BACKEND ═══
+function loadRealMenu() {
+  fetch('/api/items')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(!d.items||!d.items.length) return;
+      // Map backend items into Smart Menu format
+      var deptMap = {kitchen:'kitchen',bar:'bar',sushi:'sushi',coffee:'coffee',brunch:'brunch'};
+      // Clear existing smart dept items and rebuild from real data
+      d.items.forEach(function(item){
+        var dept = item.department || 'kitchen';
+        if(typeof SMART_DEPTS !== 'undefined' && SMART_DEPTS[dept]) {
+          // Check if item already exists
+          var exists = SMART_DEPTS[dept].items.some(function(i){return i.name===item.name;});
+          if(!exists) {
+            SMART_DEPTS[dept].items.push({
+              id: 'db_'+item.id,
+              name: item.name,
+              price: item.price,
+              badges: item.ai_pick ? ['ai'] : item.surge ? ['surge'] : [],
+              desc: item.description || '',
+              surge: !!item.surge
+            });
+          }
+        }
+      });
+      // Re-render menu
+      if(typeof buildSmartDeptTabs==='function') buildSmartDeptTabs();
+      if(typeof renderSmartMenu==='function') renderSmartMenu();
+      if(typeof masterToast==='function') masterToast('Menu loaded — '+d.items.length+' items','ok');
+    })
+    .catch(function(e){
+      console.warn('Menu load error:', e);
+    });
+}
+
+// Also fix the left nav buttons
+function fixPOSNav() {
+  var navMap = {
+    'ni-order':   function(){if(typeof POS_goto==='function')POS_goto('order');},
+    'ni-kds':     function(){if(typeof POS_goto==='function')POS_goto('kds');},
+    'ni-intel':   function(){if(typeof POS_goto==='function')POS_goto('intel');},
+    'ni-reports': function(){if(typeof POS_goto==='function')POS_goto('reports');},
+    'ni-loyalty': function(){if(typeof POS_goto==='function')POS_goto('loyalty');},
+    'ni-inventory':function(){if(typeof POS_goto==='function')POS_goto('inventory');},
+  };
+  Object.keys(navMap).forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.onclick = navMap[id];
+  });
+  // Fix screen tabs
+  var tabMap = {
+    'st-order':     'order',
+    'st-kds':       'kds', 
+    'st-intel':     'intel',
+    'st-reports':   'reports',
+    'st-loyalty':   'loyalty',
+    'st-inventory': 'inventory',
+  };
+  Object.keys(tabMap).forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.onclick = (function(screen){return function(){if(typeof POS_goto==='function')POS_goto(screen);};})(tabMap[id]);
+  });
+}
+
+setTimeout(function(){try{if(typeof fixPOSNav==='function')fixPOSNav();}catch(e){}},1000);
 console.log('%c🚀 TunaPOS UNIFIED — Fixed & Ready','color:#d4af37;font-size:14px;font-weight:bold');
 console.log('%cPOS · Back Office · Receipt Studio · Inventory · Split Check · NABC · HQ · Franchisee Portal','color:#00ff9d;font-size:11px');
 
