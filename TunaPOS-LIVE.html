@@ -11086,17 +11086,24 @@ function showPINLogin(callback) {
       
       <div id="pin-display" style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:#d4af37;letter-spacing:0.3em;margin-bottom:20px;height:40px;line-height:40px">••••</div>
       
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
-        ${[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(function(k) {
-          return '<button onclick="pinKey('' + k + '')" style="padding:14px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#dde5f0;font-family:Syne,sans-serif;font-size:18px;font-weight:700;cursor:pointer;transition:all .15s" onmouseover="this.style.background='rgba(212,175,55,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'">' + k + '</button>';
-        }).join('')}
-      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px" id="pin-keypad"></div>
       
       <div id="pin-error" style="color:#ff4b6e;font-size:11px;height:16px;margin-bottom:8px"></div>
       <button onclick="closePINLogin()" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#3d4f62;font-family:inherit;font-size:11px;cursor:pointer">Cancel</button>
     </div>`;
   
   document.body.appendChild(overlay);
+  // Build keypad
+  var kpad = document.getElementById('pin-keypad');
+  [1,2,3,4,5,6,7,8,9,'C',0,'⌫'].forEach(function(k) {
+    var btn = document.createElement('button');
+    btn.textContent = k;
+    btn.style.cssText = 'padding:14px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#dde5f0;font-family:Syne,sans-serif;font-size:18px;font-weight:700;cursor:pointer;transition:all .15s;width:100%';
+    btn.onmouseover = function(){this.style.background='rgba(212,175,55,0.1)';};
+    btn.onmouseout = function(){this.style.background='rgba(255,255,255,0.04)';};
+    btn.onclick = function(){pinKey(String(k));};
+    kpad.appendChild(btn);
+  });
   window._pinCallback = callback;
   window._pinValue = '';
   updatePinDisplay();
