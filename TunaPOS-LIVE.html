@@ -2130,6 +2130,50 @@ html,body{height:100%;background:var(--void);color:var(--txt);font-family:"Instr
 <!-- MASTER TOAST -->
 <div id="master-toast"></div>
 
+<script>
+// CRITICAL — Login functions must load first, before any module scripts
+var currentTier = 'restaurant';
+var TIER_MODULES = {
+  restaurant: ['pos','backoffice','split','nabc'],
+  chain:      ['pos','backoffice','inventory','split','nabc'],
+  enterprise: ['pos','backoffice','inventory','split','nabc','hq','portal'],
+};
+
+function selectTier(tier, el) {
+  currentTier = tier;
+  document.querySelectorAll('.tier-opt').forEach(function(e){e.classList.remove('sel');});
+  el.classList.add('sel');
+}
+
+function tunaLogin() {
+  var btn = document.querySelector('.login-btn');
+  if(btn) btn.textContent = 'Signing in...';
+  document.getElementById('tunapos-login').style.display='none';
+  document.getElementById('tunapos-nav').classList.add('active');
+  if(typeof applyTier==='function') applyTier(currentTier);
+  if(typeof switchModule==='function') switchModule('pos');
+  if(btn) btn.textContent='Sign In →';
+  setTimeout(function(){
+    if(typeof showPINLogin==='function'){
+      showPINLogin(function(d){
+        if(typeof masterToast==='function') masterToast('Welcome, '+(d&&d.staff?d.staff.name:'Staff')+'!','ok');
+      });
+    }
+  }, 400);
+  fetch('/api/items')
+    .then(function(){
+      var dot=document.getElementById('api-dot');
+      var txt=document.getElementById('api-txt');
+      if(dot) dot.style.background='var(--bio)';
+      if(txt){txt.textContent='Backend live';txt.style.color='var(--bio)';}
+    })
+    .catch(function(){
+      var dot=document.getElementById('api-dot');
+      if(dot) dot.style.background='var(--amber)';
+    });
+}
+</script>
+
 <div id="mod-pos">
 <div class="ambient"><div class="amb-orb"></div><div class="amb-orb"></div><div class="amb-orb"></div></div>
 <div class="shell">
@@ -10891,7 +10935,7 @@ console.log("%c2 roles · Dashboard · Revenue · Menu · Staff · Royalty · HQ
 } catch(e) { console.warn("portal module error:", e.message); }
 
 // ═══════════ TUNAPOS UNIFIED CONTROLLER ═══════════
-var currentTier = 'restaurant';
+// currentTier defined in early script above
 var currentModule = 'pos';
 
 var TIER_MODULES = {
@@ -10900,39 +10944,9 @@ var TIER_MODULES = {
   enterprise: ['pos','backoffice','inventory','split','nabc','hq','portal'],
 };
 
-function selectTier(tier, el) {
-  currentTier = tier;
-  document.querySelectorAll('.tier-opt').forEach(function(e){e.classList.remove('sel');});
-  el.classList.add('sel');
-}
+// selectTier defined in early script
 
-function tunaLogin() {
-  var btn = document.querySelector('.login-btn');
-  btn.textContent = 'Signing in...';
-  // First hide login, show system
-  document.getElementById('tunapos-login').style.display='none';
-  document.getElementById('tunapos-nav').classList.add('active');
-  applyTier(currentTier);
-  switchModule('pos');
-  btn.textContent='Sign In →';
-  // Then require PIN
-  setTimeout(function() {
-    showPINLogin(function(d) {
-      masterToast('TunaPOS ready — ' + (d.staff ? d.staff.name : 'Staff') + ' logged in', 'ok');
-    });
-  }, 300);
-  // Check backend
-  fetch('/api/items')
-    .then(function(){
-      document.getElementById('api-dot').style.background='var(--bio)';
-      document.getElementById('api-txt').textContent='● Backend live';
-      document.getElementById('api-txt').style.color='var(--bio)';
-    })
-    .catch(function(){
-      document.getElementById('api-dot').style.background='var(--amber)';
-      document.getElementById('api-txt').textContent='Offline mode';
-    });
-}
+// tunaLogin defined in early script
 
 function applyTier(tier) {
   var badge = document.getElementById('tn-tier-badge');
@@ -11078,22 +11092,21 @@ function showPINLogin(callback) {
   overlay.id = 'pin-overlay';
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(2,3,5,0.95);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px)';
   
-  overlay.innerHTML = `
-    <div style="background:#121820;border:1px solid rgba(212,175,55,0.3);border-radius:16px;padding:28px;width:320px;text-align:center;box-shadow:0 40px 80px rgba(0,0,0,0.7)">
-      <div style="font-size:28px;margin-bottom:8px">🔐</div>
-      <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin-bottom:4px">Staff PIN Login</div>
-      <div style="font-size:10px;color:#3d4f62;margin-bottom:20px">Enter your 4-digit PIN</div>
-      
-      <div id="pin-display" style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:#d4af37;letter-spacing:0.3em;margin-bottom:20px;height:40px;line-height:40px">••••</div>
-      
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px" id="pin-keypad"></div>
-      
-      <div id="pin-error" style="color:#ff4b6e;font-size:11px;height:16px;margin-bottom:8px"></div>
-      <button onclick="closePINLogin()" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#3d4f62;font-family:inherit;font-size:11px;cursor:pointer">Cancel</button>
-    </div>`;
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#121820;border:1px solid rgba(212,175,55,0.3);border-radius:16px;padding:28px;width:320px;text-align:center;box-shadow:0 40px 80px rgba(0,0,0,0.7)';
+  box.innerHTML = 
+    '<div style="font-size:28px;margin-bottom:8px">🔐</div>' +
+    '<div style="font-family:Syne,sans-serif;font-size:16px;font-weight:800;margin-bottom:4px">Staff PIN Login</div>' +
+    '<div style="font-size:10px;color:#3d4f62;margin-bottom:20px">Enter your 4-digit PIN</div>' +
+    '<div id="pin-display" style="font-family:JetBrains Mono,monospace;font-size:28px;font-weight:700;color:#d4af37;letter-spacing:0.3em;margin-bottom:20px;height:40px;line-height:40px">○○○○</div>' +
+    '<div id="pin-keypad" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px"></div>' +
+    '<div id="pin-error" style="color:#ff4b6e;font-size:11px;height:16px;margin-bottom:8px"></div>' +
+    '<button onclick="closePINLogin()" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#3d4f62;font-family:inherit;font-size:11px;cursor:pointer">Cancel</button>';
   
+  overlay.appendChild(box);
   document.body.appendChild(overlay);
-  // Build keypad
+  
+  // Build keypad with DOM
   var kpad = document.getElementById('pin-keypad');
   [1,2,3,4,5,6,7,8,9,'C',0,'⌫'].forEach(function(k) {
     var btn = document.createElement('button');
@@ -11104,10 +11117,12 @@ function showPINLogin(callback) {
     btn.onclick = function(){pinKey(String(k));};
     kpad.appendChild(btn);
   });
+  
   window._pinCallback = callback;
   window._pinValue = '';
   updatePinDisplay();
 }
+
 
 function pinKey(k) {
   if (k === '⌫') {
@@ -11207,52 +11222,41 @@ function showSplitTender(total, onComplete) {
   overlay.id = 'split-tender-overlay';
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(2,3,5,0.95);z-index:99998;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px)';
   
-  var cashPaid = 0;
-  var cardPaid = 0;
-  var remaining = total;
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#121820;border:1px solid rgba(0,212,255,0.2);border-radius:16px;padding:24px;width:380px;box-shadow:0 40px 80px rgba(0,0,0,0.7)';
+  box.innerHTML = '<div style="font-family:Syne,sans-serif;font-size:16px;font-weight:800;margin-bottom:16px">✂️ Split Tender <span style="float:right;color:#00ff9d;font-family:JetBrains Mono,monospace">$' + total.toFixed(2) + '</span></div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">' +
+    '<div style="background:#0e1219;border:1px solid rgba(0,255,157,0.2);border-radius:10px;padding:12px;text-align:center"><div style="font-size:9px;color:#3d4f62;text-transform:uppercase;margin-bottom:4px">💵 Cash</div><div id="st-cash" style="font-family:JetBrains Mono,monospace;font-size:22px;font-weight:700;color:#00ff9d">$0.00</div></div>' +
+    '<div style="background:#0e1219;border:1px solid rgba(0,212,255,0.2);border-radius:10px;padding:12px;text-align:center"><div style="font-size:9px;color:#3d4f62;text-transform:uppercase;margin-bottom:4px">💳 Card</div><div id="st-card" style="font-family:JetBrains Mono,monospace;font-size:22px;font-weight:700;color:#00d4ff">$' + total.toFixed(2) + '</div></div>' +
+    '</div>' +
+    '<div style="font-size:10px;color:#7a8a9e;margin-bottom:6px">Quick cash:</div>' +
+    '<div style="display:flex;gap:6px;margin-bottom:8px" id="st-quick"></div>' +
+    '<input id="st-cash-input" type="number" step="0.01" min="0" max="' + total + '" placeholder="Enter cash amount" style="width:100%;background:#0e1219;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px 12px;color:#dde5f0;font-family:JetBrains Mono,monospace;font-size:14px;outline:none;margin-bottom:10px">' +
+    '<div id="st-remaining" style="text-align:center;font-family:JetBrains Mono,monospace;font-size:13px;color:#ffb547;margin-bottom:16px">Remaining on card: $' + total.toFixed(2) + '</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">' +
+    '<button onclick="closeSplitTender()" style="padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#7a8a9e;font-family:inherit;font-size:12px;cursor:pointer">Cancel</button>' +
+    '<button id="st-confirm-btn" style="padding:12px;border-radius:8px;border:none;background:linear-gradient(135deg,#00d4ff,#7b2fff);color:#fff;font-family:Syne,sans-serif;font-size:13px;font-weight:800;cursor:pointer">Charge Card</button>' +
+    '</div>';
   
-  overlay.innerHTML = `
-    <div style="background:#121820;border:1px solid rgba(0,212,255,0.2);border-radius:16px;padding:24px;width:380px;box-shadow:0 40px 80px rgba(0,0,0,0.7)">
-      <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin-bottom:4px;display:flex;align-items:center;gap:8px">
-        ✂️ Split Tender
-        <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:14px;color:#00ff9d">$${total.toFixed(2)}</span>
-      </div>
-      <div style="font-size:10px;color:#3d4f62;margin-bottom:20px">Split payment between cash and card</div>
-      
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
-        <div style="background:#0e1219;border:1px solid rgba(0,255,157,0.2);border-radius:10px;padding:12px;text-align:center">
-          <div style="font-size:9px;color:#3d4f62;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">💵 Cash</div>
-          <div id="st-cash" style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:#00ff9d">$0.00</div>
-        </div>
-        <div style="background:#0e1219;border:1px solid rgba(0,212,255,0.2);border-radius:10px;padding:12px;text-align:center">
-          <div style="font-size:9px;color:#3d4f62;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">💳 Card</div>
-          <div id="st-card" style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:#00d4ff">$${total.toFixed(2)}</div>
-        </div>
-      </div>
-      
-      <div style="margin-bottom:12px">
-        <div style="font-size:10px;color:#7a8a9e;margin-bottom:6px">Cash amount received:</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
-          ${[5,10,20,50,100].map(function(a){
-            return '<button onclick="stSetCash(' + a + ',' + total + ')" style="padding:6px 12px;border-radius:6px;border:1px solid rgba(0,255,157,0.3);background:rgba(0,255,157,0.06);color:#00ff9d;font-family:Syne,sans-serif;font-size:12px;font-weight:700;cursor:pointer">$' + a + '</button>';
-          }).join('')}
-        </div>
-        <input id="st-cash-input" type="number" step="0.01" min="0" max="${total}" placeholder="Enter cash amount" 
-          oninput="stUpdateSplit(this.value,${total})"
-          style="width:100%;background:#0e1219;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px 12px;color:#dde5f0;font-family:JetBrains Mono,monospace;font-size:14px;outline:none">
-      </div>
-      
-      <div id="st-remaining" style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:13px;color:#ffb547;margin-bottom:16px">
-        Remaining on card: $${total.toFixed(2)}
-      </div>
-      
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <button onclick="closeSplitTender()" style="padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#7a8a9e;font-family:inherit;font-size:12px;cursor:pointer">Cancel</button>
-        <button id="st-confirm-btn" onclick="confirmSplitTender(${total})" style="padding:12px;border-radius:8px;border:none;background:linear-gradient(135deg,#00d4ff,#7b2fff);color:#fff;font-family:Syne,sans-serif;font-size:13px;font-weight:800;cursor:pointer">Charge Card</button>
-      </div>
-    </div>`;
-  
+  overlay.appendChild(box);
   document.body.appendChild(overlay);
+  
+  // Quick cash buttons
+  var qk = document.getElementById('st-quick');
+  [5,10,20,50,100].forEach(function(a) {
+    var b = document.createElement('button');
+    b.textContent = '$' + a;
+    b.style.cssText = 'padding:6px 12px;border-radius:6px;border:1px solid rgba(0,255,157,0.3);background:rgba(0,255,157,0.06);color:#00ff9d;font-family:Syne,sans-serif;font-size:12px;font-weight:700;cursor:pointer';
+    b.onclick = function() { stSetCash(a, total); };
+    qk.appendChild(b);
+  });
+  
+  var inp = document.getElementById('st-cash-input');
+  if (inp) inp.oninput = function() { stUpdateSplit(this.value, total); };
+  
+  var confirmBtn = document.getElementById('st-confirm-btn');
+  if (confirmBtn) confirmBtn.onclick = function() { confirmSplitTender(total); };
+  
   window._stTotal = total;
   window._stCallback = onComplete;
 }
