@@ -2713,7 +2713,7 @@ let activeTable="T-1",kdsStationActive="kitchen";
 let sessionOrders=[...SESSION_ORDERS];
 const KDS_TICKETS=[{id:1,table:"Table 3",station:"kitchen",lines:[{q:1,n:"Ribeye 8oz",m:"Med rare, Chimichurri"},{q:2,n:"Grilled Chicken",m:"Rice, BBQ"}],ts:Date.now()-420000},{id:2,table:"Bar 2",station:"bar",lines:[{q:2,n:"Old Fashioned",m:"Big cube, Double"},{q:1,n:"Margarita",m:"Rocks, Salted"}],ts:Date.now()-180000},{id:3,table:"Table 1",station:"sushi",lines:[{q:1,n:"Spicy Tuna Roll",m:"Extra hot, Sesame"},{q:3,n:"California Roll",m:"Ginger"}],ts:Date.now()-60000},{id:4,table:"Table 5",station:"kitchen",lines:[{q:1,n:"Pasta Carbonara",m:"Extra bacon"}],ts:Date.now()-660000},{id:5,table:"Table 7",station:"expo",lines:[{q:2,n:"NY Strip 12oz",m:"Well done"},{q:1,n:"Latte",m:"Large, Oat, Iced"}],ts:Date.now()-300000}];
 let kdsTickets=[...KDS_TICKETS];
-const SCREENS=['order','kds','intel','reports','loyalty','inventory'];
+var _SCREENS_1 =['order','kds','intel','reports','loyalty','inventory'];
 const TITLES_MAP={order:'New Order',kds:'Kitchen Display',intel:'Neural Intelligence',reports:'Analytics & Reports',loyalty:'Guest Loyalty Engine',inventory:'Inventory & IoT'};
 function goto(id){SCREENS.forEach(s=>{document.getElementById('sb-'+s).classList.toggle('on',s===id);document.getElementById('ni-'+s)?.classList.toggle('on',s===id);document.getElementById('st-'+s)?.classList.toggle('on',s===id);});document.getElementById('top-title').textContent=TITLES_MAP[id]||id;if(id==='kds')renderKDS();if(id==='intel')renderIntel();if(id==='reports')renderReports();if(id==='loyalty')renderLoyalty();if(id==='inventory')renderInventory(INVENTORY_DATA);}
 function buildTables(){const g=document.getElementById('table-grid');g.innerHTML='';const tables=[{n:'T-1',st:'active'},{n:'T-2',st:'busy'},{n:'T-3',st:'busy'},{n:'T-4',st:''},{n:'T-5',st:'busy'},{n:'T-6',st:''},{n:'T-7',st:'flag'},{n:'T-8',st:''},{n:'Bar',st:'busy'}];tables.forEach(t=>{const d=document.createElement('div');d.className='tbl-cell'+(t.n===activeTable?' active':t.st?' '+t.st:'');d.innerHTML=`<span class="tbl-num">${t.n.replace('T-','')}</span>${t.st||'—'}`;d.onclick=()=>{activeTable=t.n;buildTables();showToast('Table '+t.n+' selected','info')};g.appendChild(d);});}
@@ -4713,7 +4713,7 @@ function renderHWFleet() {
 }
 
 // ── NAVIGATION ────────────────────────────────────────────────────
-const SCREENS = ['overview','royalty','payment','compliance','hardware'];
+var _SCREENS_2 = ['overview','royalty','payment','compliance','hardware'];
 function gotoScreen(id, tabEl) {
   SCREENS.forEach(s => {
     document.getElementById('sc-'+s)?.classList.toggle('on', s===id);
@@ -5418,7 +5418,7 @@ function logWaste(sku) {
 function closeModal() { document.getElementById("modal").classList.remove("open"); }
 
 // ── NAVIGATION ─────────────────────────────────────────────────────
-const SCREENS = ["stock","suppliers","orders","analytics"];
+var _SCREENS_3 = ["stock","suppliers","orders","analytics"];
 function gotoScreen(id, tabEl) {
   SCREENS.forEach(s => {
     document.getElementById("sc-"+s)?.classList.toggle("on",s===id);
@@ -6314,7 +6314,7 @@ console.log("%c3 modes: By Item · Equal · Custom % · NABC payment integration
 // ── STATE ──────────────────────────────────────────────────────────
 let CREDS = {cust:'',merch:'',dba:'',term:'',epiKey:'',trace:'TUNAPOS-001',env:'sandbox'};
 let amtCents = 0;
-let payMethod = 'tap';
+var _payMethod_1 = 'tap';
 let TXNs = [];
 
 // ── HMAC-SHA256 (Web Crypto — mirrors EPX signing script) ─────────
@@ -6727,7 +6727,7 @@ function toggleEnv() {
 }
 
 // ── NAVIGATION ────────────────────────────────────────────────────
-const SCREENS = ['config','charge','transactions','testcards','docs'];
+var _SCREENS_4 = ['config','charge','transactions','testcards','docs'];
 function goto(id) {
   SCREENS.forEach(s=>{
     document.getElementById('sc-'+s)?.classList.toggle('on',s===id);
@@ -7372,7 +7372,7 @@ function replyHQ() { showToast("Reply sent to HQ","ok"); }
 function contactHQ() { showToast("Opening HQ support channel...","info"); }
 
 // ── NAVIGATION ─────────────────────────────────────────────────────
-const SCREENS = ["dashboard","revenue","menu","staff","royalty","messages"];
+var _SCREENS_5 = ["dashboard","revenue","menu","staff","royalty","messages"];
 function gotoScreen(id, tabEl) {
   SCREENS.forEach(s=>{document.getElementById("sc-"+s)?.classList.toggle("on",s===id);});
   if(tabEl){document.querySelectorAll(".ntab").forEach(t=>t.classList.remove("on"));tabEl.classList.add("on");}
