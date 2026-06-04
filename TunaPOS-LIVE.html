@@ -2140,6 +2140,38 @@ html,body{height:100%;background:var(--void);color:var(--txt);font-family:"Instr
 #mod-backoffice .shell,#mod-hq .shell,#mod-inventory .shell,#mod-portal .shell { height:100% !important; }
 
 </style>
+
+<style id="charge-btn-fix">
+/* Ensure charge button always visible on all screen sizes */
+#mod-pos.active .ctx-panel {
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+#mod-pos.active .order-list-wrap {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  min-height: 0 !important;
+}
+#mod-pos.active .ctx-footer,
+#mod-pos.active .charge-row,
+#mod-pos.active .pay-row,
+#mod-pos.active [class*="charge"],
+#mod-pos.active [class*="pay-btn"] {
+  flex-shrink: 0 !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
+/* Make charge button bigger on touch screens */
+@media (max-width: 1400px) {
+  .charge-btn, [class*="charge-btn"], button[class*="charge"] {
+    padding: 16px !important;
+    font-size: 16px !important;
+    min-height: 54px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <style>
