@@ -2132,90 +2132,7 @@ html,body{height:100%;background:var(--void);color:var(--txt);font-family:"Instr
 
 
 
-<style id="tunapos-volcora">
-/* FLEXBOX LAYOUT — works on Android Chrome */
-#mod-pos.active {
-  display: flex !important;
-  flex-direction: column !important;
-  position: fixed !important;
-  top: 44px !important; left: 0 !important;
-  right: 0 !important; bottom: 0 !important;
-  background: #020305 !important;
-  overflow: hidden !important;
-}
-#mod-pos.active .shell {
-  display: flex !important;
-  flex-direction: row !important;
-  flex: 1 !important;
-  height: 100% !important;
-  width: 100% !important;
-  overflow: hidden !important;
-  min-height: 0 !important;
-}
-#mod-pos.active .icon-nav {
-  display: none !important;
-  width: 0 !important;
-}
-#mod-pos.active main.main-area {
-  flex: 1 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  overflow: hidden !important;
-  min-width: 0 !important;
-  background: #020305 !important;
-  height: 100% !important;
-}
-#mod-pos.active aside.ctx-panel {
-  width: 300px !important;
-  min-width: 300px !important;
-  max-width: 300px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  overflow: hidden !important;
-  background: #090c14 !important;
-  border-left: 1px solid rgba(255,255,255,0.08) !important;
-  height: 100% !important;
-}
-#mod-pos.active .screens {
-  flex: 1 !important;
-  min-height: 0 !important;
-  position: relative !important;
-  overflow: hidden !important;
-}
-#mod-pos.active .screen-body {
-  position: absolute !important;
-  top: 0 !important; left: 0 !important;
-  right: 0 !important; bottom: 0 !important;
-  display: none !important;
-  flex-direction: column !important;
-  overflow: hidden !important;
-}
-#mod-pos.active .screen-body.on {
-  display: flex !important;
-}
-#mod-pos.active .smart-menu-scroll {
-  flex: 1 !important;
-  overflow-y: scroll !important;
-  -webkit-overflow-scrolling: touch !important;
-  min-height: 0 !important;
-  background: #020305 !important;
-}
-#mod-pos.active .order-list {
-  flex: 1 !important;
-  overflow-y: scroll !important;
-  -webkit-overflow-scrolling: touch !important;
-  min-height: 0 !important;
-}
-#charge-btn {
-  min-height: 54px !important;
-  font-size: 17px !important;
-  font-weight: 800 !important;
-  margin: 8px !important;
-  width: calc(100% - 16px) !important;
-  flex-shrink: 0 !important;
-  display: block !important;
-}
-</style>
+
 </head>
 <body style="background:#000000 !important;color:#dde5f0 !important">
 <style>
@@ -2420,9 +2337,9 @@ function tunaLogin() {
 
 <div id="mod-pos">
 <div class="ambient"><div class="amb-orb"></div><div class="amb-orb"></div><div class="amb-orb"></div></div>
-<div class="shell">
+<div class="shell" style="display:flex!important;flex-direction:row!important;height:100%!important;width:100%!important;overflow:hidden!important;">
 
-<nav class="icon-nav">
+<nav class="icon-nav" style="display:none!important;width:0!important;overflow:hidden!important;">
   <div class="brand-mark" style="background:#0a0f1a">
     <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#d4af37;letter-spacing:-1px">T</span>
   </div>
@@ -2458,7 +2375,7 @@ function tunaLogin() {
   </button>
 </nav>
 
-<aside class="ctx-panel">
+<aside class="ctx-panel" style="display:flex!important;flex-direction:column!important;width:300px!important;min-width:300px!important;max-width:300px!important;height:100%!important;overflow:hidden!important;background:#090c14!important;">
   <div class="ctx-hd">
     <div class="ctx-mode">
       <button class="mode-btn on" id="mb-pos" onclick="setMode('pos')">POS</button>
@@ -2525,7 +2442,7 @@ function tunaLogin() {
   </div>
 </aside>
 
-<main class="main-area">
+<main class="main-area" style="display:flex!important;flex-direction:column!important;flex:1!important;min-width:0!important;height:100%!important;overflow:hidden!important;background:#020305!important;">
   <header class="top-hd">
     <div>
       <div class="top-title" id="top-title">New Order</div>
@@ -3066,7 +2983,7 @@ setTimeout(()=>{
 
 <div id="mod-backoffice">
 <div class="ambient"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
-<div class="shell">
+<div class="shell" style="display:flex!important;flex-direction:row!important;height:100%!important;width:100%!important;overflow:hidden!important;">
 
 <!-- SIDE NAV -->
 <nav class="sidenav">
@@ -4383,7 +4300,7 @@ function printTestReceipt() {
 
 <div id="mod-hq">
 <div class="ambient"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
-<div class="shell">
+<div class="shell" style="display:flex!important;flex-direction:row!important;height:100%!important;width:100%!important;overflow:hidden!important;">
 
 <!-- TOP NAV -->
 <div class="top-nav">
@@ -5115,7 +5032,7 @@ console.log('%c💳 PioneerePay — connecting tomorrow','color:#ffb547;font-siz
 
 <div id="mod-inventory">
 <div class="ambient"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
-<div class="shell">
+<div class="shell" style="display:flex!important;flex-direction:row!important;height:100%!important;width:100%!important;overflow:hidden!important;">
 
 <!-- TOP BAR -->
 <div class="topbar">
@@ -6241,7 +6158,7 @@ console.log("%c3 modes: By Item · Equal · Custom % · NABC payment integration
 
 <div id="mod-nabc">
 <div class="ambient"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
-<div class="shell">
+<div class="shell" style="display:flex!important;flex-direction:row!important;height:100%!important;width:100%!important;overflow:hidden!important;">
 
 <!-- SIDE NAV -->
 <nav class="sidenav">
@@ -11634,5 +11551,99 @@ console.log('%c🚀 TunaPOS UNIFIED — Fixed & Ready','color:#d4af37;font-size:
 console.log('%cPOS · Back Office · Receipt Studio · Inventory · Split Check · NABC · HQ · Franchisee Portal','color:#00ff9d;font-size:11px');
 
 </script>
+
+<script id="volcora-fix">
+// Force layout on Android Chrome after everything loads
+function forceVolcoraLayout() {
+  var modPos = document.getElementById('mod-pos');
+  if (!modPos || !modPos.classList.contains('active')) return;
+  
+  // Force mod-pos full screen
+  modPos.style.cssText = 'display:block!important;position:fixed!important;top:44px!important;left:0!important;right:0!important;bottom:0!important;z-index:100!important;overflow:hidden!important;';
+  
+  // Force shell flexbox
+  var shell = modPos.querySelector('.shell');
+  if (shell) {
+    shell.style.cssText = 'display:flex!important;flex-direction:row!important;height:100%!important;width:100%!important;overflow:hidden!important;';
+  }
+  
+  // Hide icon nav
+  var iconNav = modPos.querySelector('.icon-nav');
+  if (iconNav) iconNav.style.cssText = 'display:none!important;width:0!important;';
+  
+  // Force main area
+  var mainArea = modPos.querySelector('main.main-area');
+  if (mainArea) {
+    mainArea.style.cssText = 'display:flex!important;flex-direction:column!important;flex:1!important;height:100%!important;overflow:hidden!important;min-width:0!important;background:#020305!important;';
+  }
+  
+  // Force ctx panel
+  var ctxPanel = modPos.querySelector('aside.ctx-panel');
+  if (ctxPanel) {
+    ctxPanel.style.cssText = 'display:flex!important;flex-direction:column!important;width:300px!important;min-width:300px!important;height:100%!important;overflow:hidden!important;background:#090c14!important;border-left:1px solid rgba(255,255,255,0.08)!important;';
+  }
+  
+  // Force screens
+  var screens = modPos.querySelector('.screens');
+  if (screens) {
+    screens.style.cssText = 'flex:1!important;overflow:hidden!important;position:relative!important;min-height:0!important;height:100%!important;';
+  }
+  
+  // Force active screen body visible
+  var activeScreen = modPos.querySelector('.screen-body.on');
+  if (activeScreen) {
+    activeScreen.style.cssText = 'display:flex!important;flex-direction:column!important;position:absolute!important;top:0!important;left:0!important;right:0!important;bottom:0!important;overflow:hidden!important;';
+  } else {
+    // Force first screen visible
+    var firstScreen = modPos.querySelector('.screen-body');
+    if (firstScreen) {
+      firstScreen.classList.add('on');
+      firstScreen.style.cssText = 'display:flex!important;flex-direction:column!important;position:absolute!important;top:0!important;left:0!important;right:0!important;bottom:0!important;overflow:hidden!important;';
+    }
+  }
+  
+  // Force smart menu scroll
+  var menuScroll = modPos.querySelector('.smart-menu-scroll');
+  if (menuScroll) {
+    menuScroll.style.cssText = 'flex:1!important;overflow-y:auto!important;min-height:0!important;-webkit-overflow-scrolling:touch!important;background:#020305!important;display:block!important;';
+  }
+  
+  // Force order list scrollable
+  var orderList = modPos.querySelector('.order-list');
+  if (orderList) {
+    orderList.style.cssText = 'flex:1!important;overflow-y:auto!important;min-height:0!important;-webkit-overflow-scrolling:touch!important;';
+  }
+  
+  // Force charge button visible
+  var chargeBtn = document.getElementById('charge-btn');
+  if (chargeBtn) {
+    chargeBtn.style.cssText = 'display:block!important;min-height:54px!important;font-size:17px!important;font-weight:800!important;width:calc(100% - 16px)!important;margin:8px!important;flex-shrink:0!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:10!important;';
+  }
+  
+  console.log('Volcora layout forced');
+}
+
+// Run on load and after any module switch
+window.addEventListener('load', function() {
+  setTimeout(forceVolcoraLayout, 1000);
+  setTimeout(forceVolcoraLayout, 2000);
+});
+
+// Patch switchModule to also force layout
+var _origSwitch = window.switchModule;
+window.switchModule = function(mod) {
+  if (typeof _origSwitch === 'function') _origSwitch(mod);
+  if (mod === 'pos') setTimeout(forceVolcoraLayout, 500);
+};
+
+// Also patch tunaLogin
+var _origLogin = window.tunaLogin;
+window.tunaLogin = function() {
+  if (typeof _origLogin === 'function') _origLogin();
+  setTimeout(forceVolcoraLayout, 800);
+  setTimeout(forceVolcoraLayout, 1500);
+};
+</script>
+
 </body>
 </html>
