@@ -1,6 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+<style id="volcora-nuclear">
+html { background-color: #000000 !important; }
+body { background-color: #000000 !important; }
+#tunapos-login { background: #000000 !important; }
+#mod-pos { background-color: #000000 !important; }
+.shell { background-color: #020305 !important; }
+.icon-nav { background-color: #05070d !important; }
+.ctx-panel { background-color: #090c14 !important; }
+.main-area { background-color: #020305 !important; }
+.screen-body { background-color: #020305 !important; }
+.smart-menu-scroll { background-color: #020305 !important; }
+.sb-order { background-color: #020305 !important; }
+/* Fix receipt modal overlay */
+.receipt-overlay, .modal-overlay, [id*="receipt-modal"] {
+  display: none !important;
+}
+</style>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="color-scheme" content="dark">
@@ -2259,6 +2278,49 @@ function tunaLogin() {
   if(typeof applyTier==='function') applyTier(currentTier);
   if(typeof switchModule==='function') switchModule('pos');
   if(btn) btn.textContent='Sign In →';
+  // Force POS visible
+  setTimeout(function(){
+    var modPos = document.getElementById('mod-pos');
+    if(modPos) {
+      modPos.classList.add('active');
+      modPos.style.display = 'block';
+      modPos.style.top = '44px';
+      modPos.style.height = 'calc(100vh - 44px)';
+      modPos.style.position = 'fixed';
+      modPos.style.left = '0';
+      modPos.style.right = '0';
+      modPos.style.bottom = '0';
+      modPos.style.zIndex = '100';
+    }
+    // Force shell grid
+    var shell = modPos ? modPos.querySelector('.shell') : null;
+    if(shell) {
+      shell.style.display = 'grid';
+      shell.style.gridTemplateColumns = '60px 200px 1fr';
+      shell.style.height = '100%';
+      shell.style.width = '100%';
+      shell.style.overflow = 'hidden';
+    }
+    // Force main-area
+    var mainArea = modPos ? modPos.querySelector('.main-area') : null;
+    if(mainArea) {
+      mainArea.style.display = 'flex';
+      mainArea.style.flexDirection = 'column';
+      mainArea.style.overflow = 'hidden';
+      mainArea.style.height = '100%';
+      mainArea.style.flex = '1';
+    }
+    // Show first screen
+    if(typeof POS_goto === 'function') { try{POS_goto('order');}catch(e){} }
+    else {
+      var screens = document.querySelectorAll('#mod-pos .screen-body');
+      screens.forEach(function(s){ s.style.display='none'; });
+      var first = document.querySelector('#mod-pos .screen-body');
+      if(first) { first.style.display='flex'; first.classList.add('on'); }
+    }
+    // Load menu
+    if(typeof loadRealMenu === 'function') { try{loadRealMenu();}catch(e){} }
+  }, 300);
   setTimeout(function(){
     if(typeof showPINLogin==='function'){
       showPINLogin(function(d){
@@ -11041,6 +11103,16 @@ console.log("%c2 roles · Dashboard · Revenue · Menu · Staff · Royalty · HQ
 } catch(e) { console.warn("portal module error:", e.message); }
 
 // ═══════════ TUNAPOS UNIFIED CONTROLLER ═══════════
+
+// Clear any stale receipt modals on load
+window.addEventListener('load', function() {
+  // Remove any orphaned modals
+  setTimeout(function() {
+    var modals = document.querySelectorAll('.receipt-modal, .modal-bg, [id*="receipt-bg"]');
+    modals.forEach(function(m) { m.remove(); });
+  }, 500);
+});
+
 // currentTier defined in early script above
 var currentModule = 'pos';
 
