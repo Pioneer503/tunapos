@@ -1,11 +1,27 @@
 <!DOCTYPE html>
-<html lang="en" style="background:#000;color-scheme:dark">
+<html lang="en">
 <head>
 
-
+<style id="volcora-nuclear">
+html { background-color: #000000 !important; }
+body { background-color: #000000 !important; }
+#tunapos-login { background: #000000 !important; }
+#mod-pos { background-color: #000000 !important; }
+.shell { background-color: #020305 !important; }
+.icon-nav { background-color: #05070d !important; }
+.ctx-panel { background-color: #090c14 !important; }
+.main-area { background-color: #020305 !important; }
+.screen-body { background-color: #020305 !important; }
+.smart-menu-scroll { background-color: #020305 !important; }
+.sb-order { background-color: #020305 !important; }
+/* Fix receipt modal overlay */
+.receipt-overlay, .modal-overlay, [id*="receipt-modal"] {
+  display: none !important;
+}
+</style>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1366, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#000000">
 <meta name="mobile-web-app-capable" content="yes">
@@ -36,14 +52,14 @@ html,body{height:100%;background:#000;color:var(--txt);font-family:'Instrument S
 }
 .login-particles{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .login-card{
-  position:relative;z-index:1;width:500px;
-  background:rgba(12,15,22,0.95);
+  position:relative;z-index:1;width:440px;
+  background:rgba(12,15,22,0.9);
   backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);
-  border:1px solid rgba(212,175,55,0.2);border-radius:20px;padding:44px;
+  border:1px solid rgba(212,175,55,0.2);border-radius:20px;padding:38px;
   box-shadow:0 40px 80px rgba(0,0,0,0.8),0 0 60px rgba(212,175,55,0.06);
 }
 .lc-logo{text-align:center;margin-bottom:22px;display:flex;flex-direction:column;align-items:center}
-.lc-logo img{width:200px;height:auto;filter:drop-shadow(0 0 30px rgba(212,175,55,0.6));animation:logopulse 3s ease-in-out infinite;margin-bottom:10px}
+.lc-logo img{width:150px;height:auto;filter:drop-shadow(0 0 30px rgba(212,175,55,0.6));animation:logopulse 3s ease-in-out infinite;margin-bottom:6px}
 @keyframes logopulse{0%,100%{filter:drop-shadow(0 0 30px rgba(212,175,55,0.6))}50%{filter:drop-shadow(0 0 50px rgba(212,175,55,0.9))}}
 .lc-sub{font-size:9px;color:rgba(212,175,55,0.6);letter-spacing:0.1em;text-transform:uppercase}
 .tier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
@@ -2125,16 +2141,148 @@ html,body{height:100%;background:var(--void);color:var(--txt);font-family:"Instr
 
 </style>
 
+<style id="charge-btn-fix">
+/* Ensure charge button always visible on all screen sizes */
+#mod-pos.active .ctx-panel {
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+#mod-pos.active .order-list-wrap {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  min-height: 0 !important;
+}
+#mod-pos.active .ctx-footer,
+#mod-pos.active .charge-row,
+#mod-pos.active .pay-row,
+#mod-pos.active [class*="charge"],
+#mod-pos.active [class*="pay-btn"] {
+  flex-shrink: 0 !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
+/* Make charge button bigger on touch screens */
+@media (max-width: 1400px) {
+  .charge-btn, [class*="charge-btn"], button[class*="charge"] {
+    padding: 16px !important;
+    font-size: 16px !important;
+    min-height: 54px !important;
+  }
+}
+</style>
 
 
 
+<!-- TunaPOS Volcora Production Patch v1 - 1366x768 Android 14 -->
+<style id="tunapos-volcora-production-patch">
+/* VOLCORA 15.6 ANDROID 14 PRODUCTION FIT */
+@media screen and (max-width: 1400px) and (max-height: 820px) {
+  html, body { width:100vw; height:100vh; overflow:hidden !important; font-size:12px !important; }
+  #tunapos-nav { height:36px !important; padding:0 8px !important; gap:5px !important; }
+  .tn-logo { width:42px !important; margin-right:4px !important; }
+  .tn-brand { font-size:11px !important; }
+  .nav-tab { padding:3px 7px !important; font-size:8.5px !important; }
+  .tn-clock, .api-live-pill { font-size:8px !important; padding:2px 6px !important; }
 
+  #mod-pos { top:36px !important; height:calc(100vh - 36px) !important; }
+  .shell { grid-template-columns:52px 172px 1fr !important; grid-template-rows:calc(100vh - 36px) !important; height:calc(100vh - 36px) !important; }
+  .icon-nav { padding:6px 0 !important; gap:1px !important; }
+  .brand-mark { width:36px !important; height:36px !important; margin-bottom:6px !important; }
+  .nav-ico { width:40px !important; height:38px !important; gap:1px !important; }
+  .nav-ico svg { width:15px !important; height:15px !important; }
+  .nav-lbl { font-size:6.8px !important; }
 
+  .ctx-panel { min-width:0 !important; }
+  .ctx-hd, .neuro-status, .mood-ring, .guest-strip, .table-dock { padding:7px 8px !important; }
+  .ctx-mode { margin-bottom:6px !important; }
+  .mode-btn { padding:4px 5px !important; font-size:8px !important; }
+  .ctx-venue-label, .ns-title, .ctx-cart-title { font-size:7.5px !important; }
+  .venue-sel { padding:5px 7px !important; font-size:10px !important; }
+  .nb-lbl { width:38px !important; font-size:7.5px !important; }
+  .mood-grid { gap:3px !important; }
+  .mood-cell { padding:4px 2px !important; }
+  .mood-emoji { font-size:12px !important; }
+  .mood-lbl { font-size:6.5px !important; }
+  .guest-card { padding:6px !important; gap:6px !important; }
+  .g-avatar { width:25px !important; height:25px !important; font-size:9px !important; }
+  .g-name { font-size:10px !important; }
+  .g-tag { font-size:7.5px !important; }
+  .table-grid { gap:3px !important; }
+  .tbl-cell { padding:4px 2px !important; font-size:7.5px !important; }
+  .tbl-num { font-size:11px !important; }
+  .ctx-cart { padding:7px 8px !important; }
+  .cart-item { padding:5px 6px !important; }
+  .ci-name, .ci-price { font-size:9.5px !important; }
+  .ci-mods { font-size:7.5px !important; }
+  .checkout-bar { padding:7px 8px 8px !important; }
+  .tot-row { font-size:9px !important; }
+  .tot-row.grand { font-size:12px !important; }
+  .pay-chip { padding:5px !important; font-size:8.5px !important; }
+  .charge-btn { padding:9px !important; font-size:12px !important; }
 
+  .top-hd { height:42px !important; padding:0 12px !important; gap:8px !important; }
+  .top-title { font-size:13px !important; }
+  .top-sub { font-size:9px !important; }
+  .screen-tabs { padding:0 12px !important; }
+  .stab { padding:7px 10px !important; font-size:9px !important; }
+  .enterprise-bar { padding:4px 10px !important; gap:7px !important; }
+  .tier-tab { padding:2px 7px !important; font-size:8px !important; }
+  .smart-dept-tabs { height:30px !important; padding:0 10px !important; }
+  .sdept-tab { padding:4px 8px !important; font-size:9px !important; }
+  .smart-search-wrap { padding:6px 10px 0 !important; }
+  .smart-search-input { padding:5px 10px 5px 26px !important; font-size:10px !important; }
+  .smart-menu-scroll { padding:8px 10px !important; gap:9px !important; }
+  .smart-picks-section { padding:7px 8px !important; }
+  .smart-picks-hd { margin-bottom:6px !important; }
+  .sp-title { font-size:10px !important; }
+  .sms-title { font-size:9px !important; }
+  .sc-grid { grid-template-columns:repeat(auto-fit,minmax(112px,1fr)) !important; gap:6px !important; }
+  .smart-card { min-height:62px !important; padding:6px !important; border-radius:6px !important; gap:2px !important; }
+  .sc-badges { gap:2px !important; }
+  .sc-badge { font-size:6.5px !important; padding:1px 4px !important; }
+  .sc-name { font-size:10px !important; line-height:1.1 !important; }
+  .sc-desc { font-size:7px !important; line-height:1.15 !important; max-height:16px !important; overflow:hidden !important; }
+  .sc-price { font-size:11px !important; }
 
+  .intel-layout, .rep-layout, .loy-layout { padding:12px !important; }
+  .kpi-strip { grid-template-columns:repeat(5,1fr) !important; gap:7px !important; }
+  .kpi-card, .intel-card, .chart-card { padding:10px !important; }
+}
+
+/* Simple role visibility for real deployment */
+body.tunapos-cashier-mode .nav-tab:not(.pos-on),
+body.tunapos-cashier-mode .stab[data-manager-only="true"] { display:none !important; }
+
+/* Printer and production status helpers */
+.tunapos-prod-badge{position:fixed;right:12px;bottom:12px;z-index:99999;background:rgba(0,255,157,.09);border:1px solid rgba(0,255,157,.35);color:#00ff9d;border-radius:999px;padding:6px 10px;font:700 10px 'JetBrains Mono',monospace;box-shadow:0 8px 24px rgba(0,0,0,.35);pointer-events:none;}
+</style>
+<script id="tunapos-volcora-production-js">
+(function(){
+  window.TUNAPOS_PRODUCTION = {
+    hardware:'VOLCORA_ANDROID_14_RK3576',
+    targetResolution:'1366x768',
+    printer:{host:'10.0.0.2',port:9100,width:'72mm',protocol:'escpos'},
+    apiBase:'/api'
+  };
+  function ready(fn){ if(document.readyState!=='loading') fn(); else document.addEventListener('DOMContentLoaded',fn); }
+  ready(function(){
+    document.body.classList.add('tunapos-volcora-ready');
+    var b=document.createElement('div');
+    b.className='tunapos-prod-badge';
+    b.textContent='VOLCORA READY • '+window.innerWidth+'×'+window.innerHeight;
+    document.body.appendChild(b);
+    setTimeout(function(){ b.style.display='none'; },7000);
+  });
+  window.tunaDeviceInfo=function(){
+    alert('TunaPOS Device\nScreen: '+window.innerWidth+' × '+window.innerHeight+'\nPixel ratio: '+window.devicePixelRatio+'\nAgent: '+navigator.userAgent);
+  };
+  window.tunaSetCashierMode=function(on){ document.body.classList.toggle('tunapos-cashier-mode',!!on); };
+})();
+</script>
 
 </head>
-<body style="background:#000000 !important;color:#dde5f0 !important">
+<body>
 <style>
 
 /* ALL MODULES HIDDEN BY DEFAULT — only .active shows */
@@ -2337,9 +2485,9 @@ function tunaLogin() {
 
 <div id="mod-pos">
 <div class="ambient"><div class="amb-orb"></div><div class="amb-orb"></div><div class="amb-orb"></div></div>
-<div class="shell" style="display:flex!important;flex-direction:row!important;height:100%!important;width:100%!important;overflow:hidden!important;">
+<div class="shell">
 
-<nav class="icon-nav" style="display:none!important;width:0!important;overflow:hidden!important;">
+<nav class="icon-nav">
   <div class="brand-mark" style="background:#0a0f1a">
     <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#d4af37;letter-spacing:-1px">T</span>
   </div>
@@ -2375,7 +2523,7 @@ function tunaLogin() {
   </button>
 </nav>
 
-<aside class="ctx-panel" style="display:flex!important;flex-direction:column!important;width:300px!important;min-width:300px!important;max-width:300px!important;height:100%!important;overflow:hidden!important;background:#090c14!important;">
+<aside class="ctx-panel">
   <div class="ctx-hd">
     <div class="ctx-mode">
       <button class="mode-btn on" id="mb-pos" onclick="setMode('pos')">POS</button>
@@ -2442,7 +2590,7 @@ function tunaLogin() {
   </div>
 </aside>
 
-<main class="main-area" style="display:flex!important;flex-direction:column!important;flex:1!important;min-width:0!important;height:100%!important;overflow:hidden!important;background:#020305!important;">
+<main class="main-area">
   <header class="top-hd">
     <div>
       <div class="top-title" id="top-title">New Order</div>
@@ -2960,7 +3108,7 @@ function tick(){const n=new Date();document.getElementById('clock').textContent=
 // ── KILLER FEATURES ──
 function startVoiceOrder(){if('SpeechRecognition' in window||'webkitSpeechRecognition' in window){const r=new(window.SpeechRecognition||window.webkitSpeechRecognition)();r.lang='en-US';r.onstart=()=>showToast('🎤 Listening...','info');r.onresult=(e)=>{const s=e.results[0][0].transcript.toLowerCase();const c=Math.round(e.results[0][0].confidence*100);showToast(`🗣️ Heard: "${s}" (${c}%)`,'info');};r.onerror=(e)=>showToast(`🎤 Error: ${e.error}`,'err');r.start();}else{showToast('🎤 Voice not supported','err');}}
 function cloneVenueDNA(){const v=document.getElementById('venue-sel').value;const n=prompt('Clone operations to new venue:');if(n)showToast(`🧬 DNA Clone: "${v}" → "${n}"`,'ok');}
-function printVocoraThermal(){if(!cart.length){showToast('❌ No order to print','err');return;}showToast('📠 Vocora thermal: Connecting...','info');setTimeout(()=>showToast('📠 Receipt printing (TSP143IIILAN via IP)','ok'),1000);}
+function printVocoraThermal(){if(!cart.length){showToast('❌ No order to print','err');return;}showToast('📠 Vocora thermal: Connecting...','info');setTimeout(()=>showToast('📠 Receipt printing (Volcora ESC/POS via 10.0.0.2:9100)','ok'),1000);}
 
 // ── INIT ──
 buildTables();
@@ -2983,7 +3131,7 @@ setTimeout(()=>{
 
 <div id="mod-backoffice">
 <div class="ambient"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
-<div class="shell" style="display:flex!important;flex-direction:row!important;height:100%!important;width:100%!important;overflow:hidden!important;">
+<div class="shell">
 
 <!-- SIDE NAV -->
 <nav class="sidenav">
@@ -3394,9 +3542,9 @@ const SETTINGS_DATA = {
     {lbl:"Biometric Pay",desc:"Fingerprint/facial payment verification",val:true,type:"toggle"},
     {lbl:"Settlement",desc:"Automatic ACH settlement schedule",val:"Daily — Next Business Day",type:"select",opts:["Daily — Next Business Day","Weekly — Monday","Bi-weekly"]},
   ]},
-  receipts:{title:"Receipts & Printing",sub:"Volcore TSP143IIILAN printer and receipt configuration",rows:[
-    {lbl:"Printer Model",desc:"Connected thermal receipt printer",val:"Star TSP143IIILAN (Ethernet)",type:"input"},
-    {lbl:"Printer IP",desc:"Local network IP address of printer",val:"192.168.1.88",type:"input"},
+  receipts:{title:"Receipts & Printing",sub:"Volcora built-in ESC/POS printer and receipt configuration",rows:[
+    {lbl:"Printer Model",desc:"Connected thermal receipt printer",val:"Volcora Built-in ESC/POS Ethernet",type:"input"},
+    {lbl:"Printer IP",desc:"Local network IP address of printer",val:"10.0.0.2",type:"input"},
     {lbl:"Auto-Print Receipt",desc:"Automatically print after every payment",val:false,type:"toggle"},
     {lbl:"Email Receipt",desc:"Send digital receipt to guest email",val:true,type:"toggle"},
     {lbl:"QR Receipt",desc:"Print QR code linking to digital receipt",val:true,type:"toggle"},
@@ -4300,7 +4448,7 @@ function printTestReceipt() {
 
 <div id="mod-hq">
 <div class="ambient"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
-<div class="shell" style="display:flex!important;flex-direction:row!important;height:100%!important;width:100%!important;overflow:hidden!important;">
+<div class="shell">
 
 <!-- TOP NAV -->
 <div class="top-nav">
@@ -5032,7 +5180,7 @@ console.log('%c💳 PioneerePay — connecting tomorrow','color:#ffb547;font-siz
 
 <div id="mod-inventory">
 <div class="ambient"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
-<div class="shell" style="display:flex!important;flex-direction:row!important;height:100%!important;width:100%!important;overflow:hidden!important;">
+<div class="shell">
 
 <!-- TOP BAR -->
 <div class="topbar">
@@ -6158,7 +6306,7 @@ console.log("%c3 modes: By Item · Equal · Custom % · NABC payment integration
 
 <div id="mod-nabc">
 <div class="ambient"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
-<div class="shell" style="display:flex!important;flex-direction:row!important;height:100%!important;width:100%!important;overflow:hidden!important;">
+<div class="shell">
 
 <!-- SIDE NAV -->
 <nav class="sidenav">
@@ -7957,7 +8105,7 @@ function POS_tick(){const n=new Date();document.getElementById('clock').textCont
 // ── KILLER FEATURES ──
 function startVoiceOrder(){if('SpeechRecognition' in window||'webkitSpeechRecognition' in window){const r=new(window.SpeechRecognition||window.webkitSpeechRecognition)();r.lang='en-US';r.onstart=()=>masterToast('🎤 Listening...','info');r.onresult=(e)=>{const s=e.results[0][0].transcript.toLowerCase();const c=Math.round(e.results[0][0].confidence*100);masterToast(`🗣️ Heard: "${s}" (${c}%)`,'info');};r.onerror=(e)=>masterToast(`🎤 Error: ${e.error}`,'err');r.start();}else{masterToast('🎤 Voice not supported','err');}}
 function cloneVenueDNA(){const v=document.getElementById('venue-sel').value;const n=prompt('Clone operations to new venue:');if(n)masterToast(`🧬 DNA Clone: "${v}" → "${n}"`,'ok');}
-function printVocoraThermal(){if(!cart.length){masterToast('❌ No order to print','err');return;}masterToast('📠 Vocora thermal: Connecting...','info');setTimeout(()=>masterToast('📠 Receipt printing (TSP143IIILAN via IP)','ok'),1000);}
+function printVocoraThermal(){if(!cart.length){masterToast('❌ No order to print','err');return;}masterToast('📠 Vocora thermal: Connecting...','info');setTimeout(()=>masterToast('📠 Receipt printing (Volcora ESC/POS via 10.0.0.2:9100)','ok'),1000);}
 
 // ── INIT ──
 buildTables();
@@ -8076,9 +8224,9 @@ const SETTINGS_DATA = {
     {lbl:"Biometric Pay",desc:"Fingerprint/facial payment verification",val:true,type:"toggle"},
     {lbl:"Settlement",desc:"Automatic ACH settlement schedule",val:"Daily — Next Business Day",type:"select",opts:["Daily — Next Business Day","Weekly — Monday","Bi-weekly"]},
   ]},
-  receipts:{title:"Receipts & Printing",sub:"Volcore TSP143IIILAN printer and receipt configuration",rows:[
-    {lbl:"Printer Model",desc:"Connected thermal receipt printer",val:"Star TSP143IIILAN (Ethernet)",type:"input"},
-    {lbl:"Printer IP",desc:"Local network IP address of printer",val:"192.168.1.88",type:"input"},
+  receipts:{title:"Receipts & Printing",sub:"Volcora built-in ESC/POS printer and receipt configuration",rows:[
+    {lbl:"Printer Model",desc:"Connected thermal receipt printer",val:"Volcora Built-in ESC/POS Ethernet",type:"input"},
+    {lbl:"Printer IP",desc:"Local network IP address of printer",val:"10.0.0.2",type:"input"},
     {lbl:"Auto-Print Receipt",desc:"Automatically print after every payment",val:false,type:"toggle"},
     {lbl:"Email Receipt",desc:"Send digital receipt to guest email",val:true,type:"toggle"},
     {lbl:"QR Receipt",desc:"Print QR code linking to digital receipt",val:true,type:"toggle"},
@@ -11551,99 +11699,5 @@ console.log('%c🚀 TunaPOS UNIFIED — Fixed & Ready','color:#d4af37;font-size:
 console.log('%cPOS · Back Office · Receipt Studio · Inventory · Split Check · NABC · HQ · Franchisee Portal','color:#00ff9d;font-size:11px');
 
 </script>
-
-<script id="volcora-fix">
-// Force layout on Android Chrome after everything loads
-function forceVolcoraLayout() {
-  var modPos = document.getElementById('mod-pos');
-  if (!modPos || !modPos.classList.contains('active')) return;
-  
-  // Force mod-pos full screen
-  modPos.style.cssText = 'display:block!important;position:fixed!important;top:44px!important;left:0!important;right:0!important;bottom:0!important;z-index:100!important;overflow:hidden!important;';
-  
-  // Force shell flexbox
-  var shell = modPos.querySelector('.shell');
-  if (shell) {
-    shell.style.cssText = 'display:flex!important;flex-direction:row!important;height:100%!important;width:100%!important;overflow:hidden!important;';
-  }
-  
-  // Hide icon nav
-  var iconNav = modPos.querySelector('.icon-nav');
-  if (iconNav) iconNav.style.cssText = 'display:none!important;width:0!important;';
-  
-  // Force main area
-  var mainArea = modPos.querySelector('main.main-area');
-  if (mainArea) {
-    mainArea.style.cssText = 'display:flex!important;flex-direction:column!important;flex:1!important;height:100%!important;overflow:hidden!important;min-width:0!important;background:#020305!important;';
-  }
-  
-  // Force ctx panel
-  var ctxPanel = modPos.querySelector('aside.ctx-panel');
-  if (ctxPanel) {
-    ctxPanel.style.cssText = 'display:flex!important;flex-direction:column!important;width:300px!important;min-width:300px!important;height:100%!important;overflow:hidden!important;background:#090c14!important;border-left:1px solid rgba(255,255,255,0.08)!important;';
-  }
-  
-  // Force screens
-  var screens = modPos.querySelector('.screens');
-  if (screens) {
-    screens.style.cssText = 'flex:1!important;overflow:hidden!important;position:relative!important;min-height:0!important;height:100%!important;';
-  }
-  
-  // Force active screen body visible
-  var activeScreen = modPos.querySelector('.screen-body.on');
-  if (activeScreen) {
-    activeScreen.style.cssText = 'display:flex!important;flex-direction:column!important;position:absolute!important;top:0!important;left:0!important;right:0!important;bottom:0!important;overflow:hidden!important;';
-  } else {
-    // Force first screen visible
-    var firstScreen = modPos.querySelector('.screen-body');
-    if (firstScreen) {
-      firstScreen.classList.add('on');
-      firstScreen.style.cssText = 'display:flex!important;flex-direction:column!important;position:absolute!important;top:0!important;left:0!important;right:0!important;bottom:0!important;overflow:hidden!important;';
-    }
-  }
-  
-  // Force smart menu scroll
-  var menuScroll = modPos.querySelector('.smart-menu-scroll');
-  if (menuScroll) {
-    menuScroll.style.cssText = 'flex:1!important;overflow-y:auto!important;min-height:0!important;-webkit-overflow-scrolling:touch!important;background:#020305!important;display:block!important;';
-  }
-  
-  // Force order list scrollable
-  var orderList = modPos.querySelector('.order-list');
-  if (orderList) {
-    orderList.style.cssText = 'flex:1!important;overflow-y:auto!important;min-height:0!important;-webkit-overflow-scrolling:touch!important;';
-  }
-  
-  // Force charge button visible
-  var chargeBtn = document.getElementById('charge-btn');
-  if (chargeBtn) {
-    chargeBtn.style.cssText = 'display:block!important;min-height:54px!important;font-size:17px!important;font-weight:800!important;width:calc(100% - 16px)!important;margin:8px!important;flex-shrink:0!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:10!important;';
-  }
-  
-  console.log('Volcora layout forced');
-}
-
-// Run on load and after any module switch
-window.addEventListener('load', function() {
-  setTimeout(forceVolcoraLayout, 1000);
-  setTimeout(forceVolcoraLayout, 2000);
-});
-
-// Patch switchModule to also force layout
-var _origSwitch = window.switchModule;
-window.switchModule = function(mod) {
-  if (typeof _origSwitch === 'function') _origSwitch(mod);
-  if (mod === 'pos') setTimeout(forceVolcoraLayout, 500);
-};
-
-// Also patch tunaLogin
-var _origLogin = window.tunaLogin;
-window.tunaLogin = function() {
-  if (typeof _origLogin === 'function') _origLogin();
-  setTimeout(forceVolcoraLayout, 800);
-  setTimeout(forceVolcoraLayout, 1500);
-};
-</script>
-
 </body>
 </html>
