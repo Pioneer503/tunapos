@@ -2,23 +2,7 @@
 <html lang="en">
 <head>
 
-<style id="volcora-nuclear">
-html { background-color: #000000 !important; }
-body { background-color: #000000 !important; }
-#tunapos-login { background: #000000 !important; }
-#mod-pos { background-color: #000000 !important; }
-.shell { background-color: #020305 !important; }
-.icon-nav { background-color: #05070d !important; }
-.ctx-panel { background-color: #090c14 !important; }
-.main-area { background-color: #020305 !important; }
-.screen-body { background-color: #020305 !important; }
-.smart-menu-scroll { background-color: #020305 !important; }
-.sb-order { background-color: #020305 !important; }
-/* Fix receipt modal overlay */
-.receipt-overlay, .modal-overlay, [id*="receipt-modal"] {
-  display: none !important;
-}
-</style>
+
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -2141,37 +2125,101 @@ html,body{height:100%;background:var(--void);color:var(--txt);font-family:"Instr
 
 </style>
 
-<style id="charge-btn-fix">
-/* Ensure charge button always visible on all screen sizes */
-#mod-pos.active .ctx-panel {
+
+
+
+
+
+
+<style id="tunapos-volcora">
+/* TUNAPOS VOLCORA — EXACT CLASS NAMES CONFIRMED */
+
+/* Shell: hide icon-nav, menu left, order panel right */
+#mod-pos.active .shell {
+  display: grid !important;
+  grid-template-columns: 0px 1fr 320px !important;
+  grid-template-rows: 100% !important;
+  height: 100% !important;
+  width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* Hide left icon nav */
+#mod-pos.active .icon-nav {
+  display: none !important;
+  width: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Main area — menu */
+#mod-pos.active main.main-area {
   display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  min-width: 0 !important;
+}
+
+/* Screens */
+#mod-pos.active .screens {
+  flex: 1 !important;
+  overflow: hidden !important;
+  position: relative !important;
+  min-height: 0 !important;
+}
+#mod-pos.active .screen-body {
+  position: absolute !important;
+  inset: 0 !important;
+  display: none !important;
   flex-direction: column !important;
   overflow: hidden !important;
 }
-#mod-pos.active .order-list-wrap {
+#mod-pos.active .screen-body.on {
+  display: flex !important;
+}
+
+/* Smart menu scroll */
+#mod-pos.active .smart-menu-scroll {
   flex: 1 !important;
   overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
   min-height: 0 !important;
 }
-#mod-pos.active .ctx-footer,
-#mod-pos.active .charge-row,
-#mod-pos.active .pay-row,
-#mod-pos.active [class*="charge"],
-#mod-pos.active [class*="pay-btn"] {
-  flex-shrink: 0 !important;
-  position: relative !important;
-  z-index: 10 !important;
+
+/* Order panel — aside.ctx-panel */
+#mod-pos.active aside.ctx-panel {
+  width: 320px !important;
+  min-width: 320px !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  background: #090c14 !important;
+  border-left: 1px solid rgba(255,255,255,0.07) !important;
 }
-/* Make charge button bigger on touch screens */
-@media (max-width: 1400px) {
-  .charge-btn, [class*="charge-btn"], button[class*="charge"] {
-    padding: 16px !important;
-    font-size: 16px !important;
-    min-height: 54px !important;
-  }
+
+/* Order list scrollable */
+#mod-pos.active .order-list {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  min-height: 0 !important;
+}
+
+/* Charge button — confirmed id="charge-btn" class="charge-btn" */
+#charge-btn {
+  min-height: 54px !important;
+  font-size: 17px !important;
+  font-weight: 800 !important;
+  width: calc(100% - 16px) !important;
+  margin: 8px !important;
+  border-radius: 10px !important;
+  flex-shrink: 0 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 </style>
-
 </head>
 <body>
 <style>
