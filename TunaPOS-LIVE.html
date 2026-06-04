@@ -2119,6 +2119,63 @@ html,body{height:100%;background:var(--void);color:var(--txt);font-family:"Instr
 </style>
 </head>
 <body>
+<style>
+
+/* ALL MODULES HIDDEN BY DEFAULT — only .active shows */
+#mod-pos,#mod-backoffice,#mod-hq,#mod-inventory,#mod-split,#mod-nabc,#mod-portal{
+  display:none !important;
+  position:fixed;
+  top:44px;left:0;right:0;bottom:0;
+  z-index:100;
+  overflow:hidden;
+}
+#mod-pos.active,#mod-backoffice.active,#mod-hq.active,
+#mod-inventory.active,#mod-split.active,#mod-nabc.active,#mod-portal.active{
+  display:block !important;
+}
+/* POS 3-column grid */
+#mod-pos.active .shell{
+  display:grid !important;
+  grid-template-columns:72px 220px 1fr !important;
+  height:100% !important;
+  width:100% !important;
+  overflow:hidden !important;
+  grid-template-rows:100% !important;
+}
+#mod-pos.active .main-area{
+  display:flex !important;
+  flex-direction:column !important;
+  overflow:hidden !important;
+  min-width:0 !important;
+  height:100% !important;
+}
+#mod-pos.active .screens{
+  flex:1;overflow:hidden;position:relative;min-height:0;
+}
+#mod-pos.active .screen-body{
+  position:absolute;inset:0;display:none;
+}
+#mod-pos.active .screen-body.on{
+  display:flex !important;flex-direction:column;
+}
+#mod-pos.active .smart-menu-scroll{flex:1;overflow-y:auto;min-height:0;}
+#mod-pos.active .enterprise-bar,
+#mod-pos.active .smart-dept-tabs,
+#mod-pos.active .smart-search-wrap,
+#mod-pos.active .top-hd,
+#mod-pos.active .screen-tabs{flex-shrink:0;}
+/* Other modules full height */
+#mod-backoffice.active .shell,
+#mod-hq.active .shell,
+#mod-inventory.active .shell,
+#mod-portal.active .shell{height:100% !important;}
+/* Portal login fix */
+#mod-portal #login-veil{display:none !important;}
+#mod-portal.active #login-veil{display:flex !important;}
+#mod-portal #main-app{display:none !important;}
+#mod-portal.active #main-app{display:grid !important;}
+
+</style>
 <div id="tunapos-login">
   <div class="login-particles" id="lp"></div>
   <div class="login-card">
