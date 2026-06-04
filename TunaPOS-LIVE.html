@@ -58,11 +58,6 @@ html,body{height:100%;background:#000;color:var(--txt);font-family:'Instrument S
 @keyframes floatup{0%{opacity:0;transform:translateY(0)}10%{opacity:1}90%{opacity:0.3}100%{opacity:0;transform:translateY(-100vh)}}
 
 /* MODULE SYSTEM */
-#mod-pos,#mod-backoffice,#mod-hq,#mod-inventory,#mod-split,#mod-nabc,#mod-portal{
-  display:none;position:fixed;inset:0;z-index:100;overflow:hidden;
-}
-#mod-pos.active,#mod-backoffice.active,#mod-hq.active,#mod-inventory.active,
-#mod-split.active,#mod-nabc.active,#mod-portal.active{display:block}
 
 /* GLOBAL NAV */
 #tunapos-nav{
@@ -90,16 +85,6 @@ html,body{height:100%;background:#000;color:var(--txt);font-family:'Instrument S
 .api-live-pill{display:flex;align-items:center;gap:4px;padding:2px 7px;border-radius:99px;font-size:8px;font-weight:600;font-family:'JetBrains Mono',monospace;border:1px solid rgba(0,255,157,0.3);background:var(--bio-dim);color:var(--bio)}
 
 /* Offset modules content below nav */
-#mod-pos{top:44px;height:calc(100vh - 44px)}
-#mod-pos .shell{
-  height:calc(100vh - 44px) !important;
-  grid-template-rows:calc(100vh - 44px);
-}
-#mod-pos .icon-nav{padding-top:8px;height:calc(100vh - 44px)}
-#mod-pos .ctx-panel{overflow-y:auto;height:calc(100vh - 44px)}
-#mod-pos .main-area{overflow:hidden;height:calc(100vh - 44px)}
-#mod-pos .screens{height:100%}
-#mod-pos .screen-body.on{display:flex;flex-direction:column}
 #mod-split{top:44px;height:calc(100vh - 44px);overflow-y:auto}
 #mod-nabc{top:44px;height:calc(100vh - 44px)}
 #mod-backoffice{top:44px;height:calc(100vh - 44px)}
@@ -2072,6 +2057,58 @@ html,body{height:100%;background:var(--void);color:var(--txt);font-family:"Instr
 .toast.info{border-color:rgba(0,212,255,0.3);color:var(--neural)}
 .toast.warn{border-color:rgba(255,181,71,0.3);color:var(--amber)}
 .toast.err{border-color:rgba(255,75,110,0.3);color:var(--danger)}
+
+
+/* ═══ POS LAYOUT FIX ═══ */
+#mod-pos { position:fixed; top:44px; left:0; right:0; bottom:0; z-index:100; display:block; }
+#mod-pos .ambient { display:none; }
+#mod-pos .shell {
+  display:grid !important;
+  grid-template-columns:72px 220px 1fr !important;
+  grid-template-rows:100% !important;
+  height:100% !important;
+  width:100% !important;
+  overflow:hidden !important;
+  position:relative !important;
+}
+#mod-pos .icon-nav { height:100%; overflow:hidden; }
+#mod-pos .ctx-panel { height:100%; overflow-y:auto; }
+#mod-pos .main-area { 
+  height:100%; 
+  display:flex !important; 
+  flex-direction:column !important; 
+  overflow:hidden !important;
+  min-width:0;
+}
+#mod-pos .top-hd { flex-shrink:0; }
+#mod-pos .screen-tabs { flex-shrink:0; }
+#mod-pos .screens { 
+  flex:1; 
+  overflow:hidden; 
+  position:relative; 
+  min-height:0;
+}
+#mod-pos .screen-body { 
+  position:absolute; 
+  inset:0; 
+  display:none; 
+  flex-direction:column;
+  overflow:hidden;
+}
+#mod-pos .screen-body.on { display:flex !important; }
+#mod-pos .sb-order { display:flex; flex-direction:column; }
+#mod-pos .enterprise-bar { flex-shrink:0; }
+#mod-pos .smart-dept-tabs { flex-shrink:0; }
+#mod-pos .smart-search-wrap { flex-shrink:0; }
+#mod-pos .smart-menu-scroll { flex:1; overflow-y:auto; min-height:0; }
+/* Other modules */
+#mod-backoffice { position:fixed; top:44px; left:0; right:0; bottom:0; z-index:100; }
+#mod-hq { position:fixed; top:44px; left:0; right:0; bottom:0; z-index:100; }
+#mod-inventory { position:fixed; top:44px; left:0; right:0; bottom:0; z-index:100; }
+#mod-split { position:fixed; top:44px; left:0; right:0; bottom:0; z-index:100; overflow-y:auto; }
+#mod-nabc { position:fixed; top:44px; left:0; right:0; bottom:0; z-index:100; }
+#mod-portal { position:fixed; top:44px; left:0; right:0; bottom:0; z-index:100; }
+#mod-backoffice .shell,#mod-hq .shell,#mod-inventory .shell,#mod-portal .shell { height:100% !important; }
 
 </style>
 </head>
