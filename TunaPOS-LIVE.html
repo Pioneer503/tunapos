@@ -2059,6 +2059,12 @@ html,body{height:100%;background:var(--void);color:var(--txt);font-family:"Instr
 .toast.err{border-color:rgba(255,75,110,0.3);color:var(--danger)}
 
 
+/* Hide portal login by default */
+#mod-portal #login-veil { display:none !important; }
+#mod-portal.active #login-veil { display:flex !important; }
+#mod-portal #main-app { display:none !important; }
+#mod-portal.active #main-app { display:grid !important; }
+
 /* ═══ POS LAYOUT FIX ═══ */
 #mod-pos { position:fixed; top:44px; left:0; right:0; bottom:0; z-index:100; display:block; }
 #mod-pos .ambient { display:none; }
@@ -2183,6 +2189,8 @@ function selectTier(tier, el) {
 }
 
 function tunaLogin() {
+  // Force hide all modules first
+  document.querySelectorAll('[id^="mod-"]').forEach(function(el){el.classList.remove('active');});
   var btn = document.querySelector('.login-btn');
   if(btn) btn.textContent = 'Signing in...';
   document.getElementById('tunapos-login').style.display='none';
