@@ -11809,7 +11809,7 @@ console.log('%cPOS · Back Office · Receipt Studio · Inventory · Split Check 
     document.querySelectorAll('#tp-mode-switcher button').forEach(function(b){b.classList.toggle('on', b.dataset.mode===mode);});
     if(mode==='cashier') safeGoto('order');
     if(mode==='manager') safeGoto('reports');
-    if(mode==='enterprise') safeGoto('intel');
+    if(mode==='enterprise') { safeGoto('command'); setTimeout(function(){ if(window.TunaPOSCommandCenter) window.TunaPOSCommandCenter(); },80); }
     try{
       var fn = window.masterToast || window.showToast;
       if(fn) fn('Mode switched: '+mode.toUpperCase(), 'info');
@@ -11828,6 +11828,74 @@ console.log('%cPOS · Back Office · Receipt Studio · Inventory · Split Check 
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',inject); else inject();
   setTimeout(inject,1500);
+})();
+</script>
+
+
+
+<!-- TunaPOS Enterprise Command Center Patch -->
+<style id="tunapos-command-center-css">
+  .tcc-wrap{flex:1;overflow:auto;padding:18px 20px 78px;background:#020305;color:var(--txt);}
+  .tcc-hero{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:14px;padding:14px 16px;border:1px solid rgba(212,175,55,.22);border-radius:14px;background:linear-gradient(135deg,rgba(212,175,55,.08),rgba(0,212,255,.035));box-shadow:0 0 30px rgba(212,175,55,.04)}
+  .tcc-title{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;letter-spacing:.01em;color:#f2d47a}.tcc-sub{font-size:11px;color:var(--txt3);margin-top:3px}.tcc-score{min-width:145px;text-align:center;border:1px solid rgba(0,255,157,.25);background:rgba(0,255,157,.06);border-radius:12px;padding:10px}.tcc-score b{font-family:'Syne',sans-serif;font-size:34px;color:var(--bio);display:block;line-height:1}.tcc-score span{font-size:9px;color:var(--txt3);letter-spacing:.08em;text-transform:uppercase}
+  .tcc-kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px}.tcc-card{background:var(--card);border:1px solid var(--rim);border-radius:12px;padding:12px 13px;min-height:92px;position:relative;overflow:hidden}.tcc-card:before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--neural),var(--bio))}.tcc-card.gold:before{background:linear-gradient(90deg,#d4af37,#ffe08a)}.tcc-card.pink:before{background:linear-gradient(90deg,var(--danger),var(--amber))}.tcc-lbl{font-size:9px;color:var(--txt3);font-weight:800;letter-spacing:.08em;text-transform:uppercase}.tcc-val{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-top:8px;letter-spacing:-.02em}.tcc-delta{font-size:10px;margin-top:4px;color:var(--bio)}.tcc-warn{color:var(--amber)}
+  .tcc-grid{display:grid;grid-template-columns:1.2fr .9fr .9fr;gap:12px;margin-bottom:12px}.tcc-panel{background:var(--card);border:1px solid var(--rim);border-radius:14px;padding:14px;min-height:220px}.tcc-panel h3{font-family:'Syne',sans-serif;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--txt2);margin-bottom:12px;display:flex;align-items:center;gap:8px}.tcc-panel h3:after{content:'';flex:1;height:1px;background:var(--rim)}
+  .tcc-location{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--rim)}.tcc-location:last-child{border-bottom:none}.tcc-location b{font-size:12px}.tcc-mono{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt2)}.tcc-bar{height:5px;background:var(--rim2);border-radius:99px;overflow:hidden}.tcc-fill{height:100%;background:linear-gradient(90deg,var(--neural),var(--bio));border-radius:99px}.tcc-alert{padding:10px 12px;border-radius:10px;border:1px solid var(--rim);margin-bottom:8px;background:var(--raised);font-size:11px;line-height:1.45}.tcc-alert.high{border-color:rgba(255,75,110,.36);background:rgba(255,75,110,.06)}.tcc-alert.med{border-color:rgba(255,181,71,.34);background:rgba(255,181,71,.06)}.tcc-alert.low{border-color:rgba(0,255,157,.28);background:rgba(0,255,157,.04)}.tcc-alert b{display:block;margin-bottom:3px}.tcc-alert small{color:var(--txt3)}
+  .tcc-products{width:100%;border-collapse:collapse}.tcc-products th{text-align:left;font-size:9px;color:var(--txt3);letter-spacing:.08em;text-transform:uppercase;padding:8px;border-bottom:1px solid var(--rim)}.tcc-products td{padding:9px 8px;font-size:11px;border-bottom:1px solid var(--rim)}.tcc-products td:nth-child(3),.tcc-products td:nth-child(4){font-family:'JetBrains Mono',monospace;color:var(--txt2)}
+  .tcc-health{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.tcc-health-card{background:var(--raised);border:1px solid var(--rim);border-radius:12px;padding:12px;text-align:center}.tcc-health-card b{font-family:'Syne';font-size:28px;color:var(--neural)}.tcc-health-card span{display:block;font-size:9px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
+  @media(max-width:1400px){.tcc-wrap{padding:14px 14px 70px}.tcc-kpis{grid-template-columns:repeat(3,1fr)}.tcc-grid{grid-template-columns:1fr 1fr}.tcc-panel.full{grid-column:1/-1}.tcc-card{min-height:78px}.tcc-val{font-size:21px}.tcc-hero{padding:10px 12px}.tcc-title{font-size:16px}}
+</style>
+<script id="tunapos-command-center-js">
+(function(){
+  function renderCommand(){
+    var el=document.getElementById('sb-command'); if(!el) return;
+    el.innerHTML=`<div class="tcc-wrap">
+      <div class="tcc-hero"><div><div class="tcc-title">Enterprise Command Center</div><div class="tcc-sub">CEO dashboard for franchise owners · real-time revenue, cost control, product performance, and AI action plan</div></div><div class="tcc-score"><b>92</b><span>Business Health</span></div></div>
+      <div class="tcc-kpis">
+        <div class="tcc-card gold"><div class="tcc-lbl">Revenue Today</div><div class="tcc-val">$12,845</div><div class="tcc-delta">↑ 8.2% vs yesterday</div></div>
+        <div class="tcc-card gold"><div class="tcc-lbl">Revenue This Week</div><div class="tcc-val">$83,220</div><div class="tcc-delta">↑ 12.5% vs last week</div></div>
+        <div class="tcc-card gold"><div class="tcc-lbl">Revenue This Month</div><div class="tcc-val">$342,120</div><div class="tcc-delta">↑ 18.1% month-to-date</div></div>
+        <div class="tcc-card"><div class="tcc-lbl">Food Cost %</div><div class="tcc-val">28.4%</div><div class="tcc-delta tcc-warn">Target: 27%</div></div>
+        <div class="tcc-card"><div class="tcc-lbl">Labor Cost %</div><div class="tcc-val">19.7%</div><div class="tcc-delta">Healthy range</div></div>
+        <div class="tcc-card"><div class="tcc-lbl">Net Margin</div><div class="tcc-val">22.3%</div><div class="tcc-delta">↑ 2.1 pts</div></div>
+      </div>
+      <div class="tcc-grid">
+        <div class="tcc-panel"><h3>Multi-Location Summary</h3>
+          ${[['Denver Downtown','$52,440','94%',92],['Denver Airport','$34,180','88%',76],['Boulder','$22,550','91%',62],['Colorado Springs','$19,300','86%',54],['Fort Collins','$17,900','89%',48]].map(function(r){return `<div class="tcc-location"><b>${r[0]}</b><span class="tcc-mono">${r[1]}</span><span class="tcc-mono">Health ${r[2]}</span><div class="tcc-bar"><div class="tcc-fill" style="width:${r[3]}%"></div></div></div>`}).join('')}
+        </div>
+        <div class="tcc-panel"><h3>AI Recommendations</h3>
+          <div class="tcc-alert high"><b>High · Denver Store</b>Food cost increased 3.2%. Review vendor pricing and portion variance.<br><small>Estimated savings: $2,140/month</small></div>
+          <div class="tcc-alert med"><b>Medium · Airport Location</b>Old Fashioned demand is increasing. Increase bourbon stock by 20%.<br><small>Projected revenue: +$3,900/month</small></div>
+          <div class="tcc-alert low"><b>Opportunity · Labor</b>Reduce 2 staff hours daily in slow window without service impact.<br><small>Projected savings: $1,200/month</small></div>
+        </div>
+        <div class="tcc-panel"><h3>Franchise Overview</h3>
+          <div class="tcc-health"><div class="tcc-health-card"><b>17</b><span>Locations</span></div><div class="tcc-health-card"><b>243</b><span>Employees</span></div><div class="tcc-health-card"><b>4.9K</b><span>Orders Today</span></div><div class="tcc-health-card"><b>72K</b><span>Loyalty Members</span></div></div>
+          <div style="margin-top:14px;font-size:12px;color:var(--txt2);line-height:1.7">Inventory Value: <b style="color:var(--bio)">$1.4M</b><br>Guests Served Today: <b style="color:var(--bio)">8,123</b><br>Active Alerts: <b style="color:var(--amber)">7</b><br>Locations Online: <b style="color:var(--bio)">17/17</b></div>
+        </div>
+      </div>
+      <div class="tcc-grid">
+        <div class="tcc-panel full"><h3>Top Products</h3><table class="tcc-products"><thead><tr><th>Item</th><th>Units</th><th>Revenue</th><th>Margin</th><th>Trend</th></tr></thead><tbody><tr><td>Ribeye 8oz</td><td>412</td><td>$13,592</td><td>72%</td><td style="color:var(--bio)">↑ 18%</td></tr><tr><td>Old Fashioned</td><td>387</td><td>$9,203</td><td>81%</td><td style="color:var(--bio)">↑ 22%</td></tr><tr><td>Matcha Latte</td><td>351</td><td>$2,105</td><td>84%</td><td style="color:var(--bio)">↑ 11%</td></tr><tr><td>Spicy Tuna Roll</td><td>308</td><td>$3,388</td><td>66%</td><td style="color:var(--amber)">Flat</td></tr><tr><td>Espresso Martini</td><td>244</td><td>$3,827</td><td>79%</td><td style="color:var(--danger)">↓ 4%</td></tr></tbody></table></div>
+        <div class="tcc-panel"><h3>Neural Health Score</h3><div class="tcc-health"><div class="tcc-health-card"><b>94</b><span>Revenue</span></div><div class="tcc-health-card"><b>88</b><span>Inventory</span></div><div class="tcc-health-card"><b>91</b><span>Labor</span></div><div class="tcc-health-card"><b>96</b><span>Guest</span></div></div></div>
+      </div>
+    </div>`;
+  }
+  function injectCommand(){
+    var tabs=document.querySelector('#mod-pos .screen-tabs');
+    if(tabs && !document.getElementById('st-command')){
+      var btn=document.createElement('button'); btn.className='stab'; btn.id='st-command'; btn.textContent='COMMAND CENTER'; btn.onclick=function(){ if(typeof POS_goto==='function') POS_goto('command'); renderCommand(); };
+      tabs.insertBefore(btn,tabs.firstChild);
+    }
+    var screens=document.querySelector('#mod-pos .screens');
+    if(screens && !document.getElementById('sb-command')){
+      var div=document.createElement('div'); div.className='screen-body'; div.id='sb-command'; screens.insertBefore(div,screens.firstChild); renderCommand();
+    }
+    try{
+      if(window.POS_SCREENS && window.POS_SCREENS.indexOf('command')===-1) window.POS_SCREENS.unshift('command');
+    }catch(e){}
+  }
+  window.TunaPOSCommandCenter = renderCommand;
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',injectCommand); else injectCommand();
+  setTimeout(injectCommand,700); setTimeout(injectCommand,1800);
 })();
 </script>
 
