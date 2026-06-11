@@ -18,6 +18,14 @@ body { background-color: #000000 !important; }
 .receipt-overlay, .modal-overlay, [id*="receipt-modal"] {
   display: none !important;
 }
+
+/* OPEN ITEM + NO SALE ACTIONS */
+.order-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+.order-action-btn{padding:9px 8px;border-radius:10px;border:1px solid var(--rim);background:rgba(15,23,42,.8);color:var(--txt);font-size:10px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;cursor:pointer}
+.order-action-btn.open{border-color:rgba(0,212,255,.5);color:var(--neural)}
+.order-action-btn.nosale{border-color:rgba(245,158,11,.55);color:var(--amber)}
+.order-action-btn:hover{filter:brightness(1.18);transform:translateY(-1px)}
+
 </style>
 
 <meta charset="UTF-8">
@@ -2580,6 +2588,10 @@ function tunaLogin() {
       <div class="tot-row"><span>Tip 18%</span><span id="t-tip">$0.00</span></div>
       <div class="tot-row grand"><span>Total</span><span id="t-grand">$0.00</span></div>
     </div>
+    <div class="order-actions">
+      <button class="order-action-btn open" onclick="openItemCharge()">+ Open Item</button>
+      <button class="order-action-btn nosale" onclick="noSaleOpenDrawer()">No Sale</button>
+    </div>
     <div class="pay-grid">
       <button class="pay-chip on" onclick="selPay('card',this)">Card</button>
       <button class="pay-chip" onclick="selPay('cash',this)">Cash</button>
@@ -3108,6 +3120,48 @@ function tick(){const n=new Date();document.getElementById('clock').textContent=
 // ── KILLER FEATURES ──
 function startVoiceOrder(){if('SpeechRecognition' in window||'webkitSpeechRecognition' in window){const r=new(window.SpeechRecognition||window.webkitSpeechRecognition)();r.lang='en-US';r.onstart=()=>showToast('🎤 Listening...','info');r.onresult=(e)=>{const s=e.results[0][0].transcript.toLowerCase();const c=Math.round(e.results[0][0].confidence*100);showToast(`🗣️ Heard: "${s}" (${c}%)`,'info');};r.onerror=(e)=>showToast(`🎤 Error: ${e.error}`,'err');r.start();}else{showToast('🎤 Voice not supported','err');}}
 function cloneVenueDNA(){const v=document.getElementById('venue-sel').value;const n=prompt('Clone operations to new venue:');if(n)showToast(`🧬 DNA Clone: "${v}" → "${n}"`,'ok');}
+
+function auditAction(action, payload){
+  const log=JSON.parse(localStorage.getItem('tunapos_audit_log')||'[]');
+  log.unshift({ts:new Date().toISOString(),action,payload});
+  localStorage.setItem('tunapos_audit_log',JSON.stringify(log.slice(0,300)));
+}
+function openItemCharge(){
+  const name=(prompt('Open Item name / description:', 'Open Item')||'').trim();
+  if(!name){showToast('Open Item cancelled','info');return;}
+  const raw=(prompt('Amount to charge:', '0.00')||'').replace(/[^0-9.]/g,'');
+  const price=parseFloat(raw);
+  if(!price||price<=0){showToast('Invalid open item amount','err');return;}
+  let category=(prompt('Category: Food, Bar, Service, Retail, Other', 'Other')||'Other').trim();
+  const reason=(prompt('Reason:', 'Item not in menu')||'Item not in menu').trim();
+  if(price>25){
+    const pin=prompt('Manager PIN required for Open Item over $25:');
+    if(!pin){showToast('Manager approval required','err');return;}
+    auditAction('MANAGER_APPROVAL_OPEN_ITEM',{name,price,category,reason,pin_entered:true});
+  }
+  cart.push({
+    sku:'OPEN-'+Date.now(),
+    name:name,
+    price:price,
+    qty:1,
+    mods:{Category:category},
+    notes:'Open Item · '+reason,
+    openItem:true
+  });
+  auditAction('OPEN_ITEM_CHARGE',{name,price,category,reason,table:activeTable});
+  renderCart();
+  showToast('Open Item added: $'+price.toFixed(2),'ok');
+}
+function noSaleOpenDrawer(){
+  const reason=(prompt('No Sale reason:', 'Cash drawer open')||'').trim();
+  if(!reason){showToast('No Sale cancelled','info');return;}
+  const pin=prompt('Manager PIN for No Sale:');
+  if(!pin){showToast('Manager approval required','err');return;}
+  auditAction('NO_SALE_CASH_DRAWER',{reason,table:activeTable,pin_entered:true});
+  showToast('No Sale logged. Cash drawer pulse queued.','ok');
+  /* Production note: cash drawer opens by sending ESC/POS pulse: 1B 70 00 19 FA to printer/cash-drawer port. */
+}
+
 function printVocoraThermal(){if(!cart.length){showToast('❌ No order to print','err');return;}showToast('📠 Vocora thermal: Connecting...','info');setTimeout(()=>showToast('📠 Receipt printing (Volcora ESC/POS via 10.0.0.2:9100)','ok'),1000);}
 
 // ── INIT ──
@@ -11896,6 +11950,152 @@ console.log('%cPOS · Back Office · Receipt Studio · Inventory · Split Check 
   window.TunaPOSCommandCenter = renderCommand;
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',injectCommand); else injectCommand();
   setTimeout(injectCommand,700); setTimeout(injectCommand,1800);
+})();
+</script>
+
+
+
+<!-- TunaPOS Manager Controls + Clean Volcora UI Patch -->
+<style id="tunapos-manager-control-clean-css">
+  /* Clean bottom area: nothing may cover Charge/Payment controls */
+  #tp-mode-chip{display:none!important;}
+  #tp-mode-switcher{
+    top:58px!important;right:14px!important;bottom:auto!important;
+    padding:4px!important;border-radius:12px!important;gap:4px!important;
+    transform:scale(.92);transform-origin:top right;
+  }
+  #tp-mode-switcher button{min-width:72px!important;padding:7px 8px!important;font-size:9px!important;}
+  .enterprise-bar{display:none!important;}
+  body.tp-cashier .checkout-bar{padding-bottom:14px!important;}
+  body.tp-cashier .charge-btn{display:block!important;margin-top:8px!important;min-height:48px!important;}
+  body.tp-cashier .pay-grid,.pay-methods{margin-bottom:0!important;}
+  #voice-btn{width:50px!important;height:50px!important;font-size:22px!important;right:18px!important;bottom:18px!important;opacity:.88!important;}
+  .manager-action-tab{display:none!important;}
+  body.tp-manager .manager-action-tab{display:inline-flex!important;}
+  body.tp-cashier .manager-action-tab,body.tp-enterprise .manager-action-tab{display:none!important;}
+  body.tp-cashier #st-command{display:none!important;}
+  body.tp-cashier .stab#st-intel, body.tp-cashier .stab#st-reports, body.tp-cashier .stab#st-loyalty, body.tp-cashier .stab#st-inventory{display:none!important;}
+  body.tp-manager #st-command, body.tp-manager .stab#st-intel{display:none!important;}
+  .tmc-wrap{padding:16px 18px 86px;overflow:auto;height:100%;background:#020305;color:var(--txt);}
+  .tmc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:12px 14px;border:1px solid var(--rim);border-radius:14px;background:linear-gradient(135deg,rgba(0,212,255,.07),rgba(0,255,157,.025));}
+  .tmc-title{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--txt);}.tmc-sub{font-size:11px;color:var(--txt3);margin-top:3px}.tmc-pill{border:1px solid rgba(0,255,157,.25);background:rgba(0,255,157,.07);color:var(--bio);font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:8px 10px;border-radius:999px}
+  .tmc-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}.tmc-kpi{background:var(--card);border:1px solid var(--rim);border-radius:12px;padding:12px;position:relative;overflow:hidden}.tmc-kpi:before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--neural),var(--bio))}.tmc-kpi.warn:before{background:linear-gradient(90deg,var(--amber),var(--danger))}.tmc-label{font-size:9px;color:var(--txt3);font-weight:800;letter-spacing:.08em;text-transform:uppercase}.tmc-value{font-family:'Syne',sans-serif;font-size:24px;font-weight:900;margin-top:8px}.tmc-note{font-size:10px;color:var(--txt3);margin-top:4px}.tmc-good{color:var(--bio)!important}.tmc-warn{color:var(--amber)!important}.tmc-bad{color:var(--danger)!important}
+  .tmc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}.tmc-panel{background:var(--card);border:1px solid var(--rim);border-radius:14px;padding:14px;min-height:220px}.tmc-panel h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--txt2);margin-bottom:12px;display:flex;align-items:center;gap:8px}.tmc-panel h3:after{content:'';height:1px;background:var(--rim);flex:1}.tmc-full{grid-column:1/-1}
+  .tmc-table{width:100%;border-collapse:collapse}.tmc-table th{text-align:left;color:var(--txt3);font-size:9px;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--rim);padding:8px}.tmc-table td{font-size:11px;border-bottom:1px solid var(--rim);padding:9px 8px}.tmc-table tr:hover td{background:rgba(0,212,255,.035)}.tmc-id{font-family:'JetBrains Mono',monospace;color:var(--neural);font-weight:800}.tmc-status{display:inline-block;border-radius:6px;padding:3px 6px;font-size:8px;font-weight:900;text-transform:uppercase}.tmc-approved{background:rgba(0,255,157,.12);color:var(--bio)}.tmc-refunded{background:rgba(255,181,71,.13);color:var(--amber)}.tmc-voided{background:rgba(255,75,110,.13);color:var(--danger)}.tmc-open{background:rgba(123,47,255,.13);color:#a78bfa}
+  .tmc-btn{border:1px solid var(--rim);background:var(--raised);color:var(--txt2);padding:7px 10px;border-radius:8px;font-size:10px;font-weight:800;cursor:pointer}.tmc-btn:hover{border-color:var(--neural);color:var(--neural)}.tmc-btn.primary{background:linear-gradient(135deg,var(--neural),#7b2fff);color:white;border-color:transparent}.tmc-btn.danger{border-color:rgba(255,75,110,.45);color:var(--danger)}.tmc-btn.good{border-color:rgba(0,255,157,.45);color:var(--bio)}
+  .tmc-form{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.tmc-field label{display:block;color:var(--txt3);font-size:9px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}.tmc-field input,.tmc-field select,.tmc-field textarea{width:100%;background:var(--raised);border:1px solid var(--rim);color:var(--txt);border-radius:9px;padding:10px;font-family:inherit;font-size:12px;outline:none}.tmc-field textarea{min-height:92px;resize:vertical}.tmc-field input:focus,.tmc-field select:focus,.tmc-field textarea:focus{border-color:var(--neural)}
+  .tmc-alert{background:var(--raised);border:1px solid var(--rim);border-radius:12px;padding:11px;margin-bottom:9px;font-size:11px;line-height:1.45}.tmc-alert.high{border-color:rgba(255,75,110,.42);background:rgba(255,75,110,.07)}.tmc-alert.med{border-color:rgba(255,181,71,.36);background:rgba(255,181,71,.07)}.tmc-alert.low{border-color:rgba(0,255,157,.30);background:rgba(0,255,157,.05)}.tmc-alert b{display:block;margin-bottom:3px}.tmc-risk{height:8px;border-radius:99px;background:var(--rim2);overflow:hidden}.tmc-risk span{display:block;height:100%;background:linear-gradient(90deg,var(--bio),var(--amber),var(--danger));border-radius:99px}.tmc-tabs-note{font-size:10px;color:var(--txt3);margin-left:auto}
+  @media(max-width:1400px){#tp-mode-switcher{top:54px!important;right:10px!important;transform:scale(.84)}.tmc-wrap{padding:12px 12px 74px}.tmc-kpis{grid-template-columns:repeat(3,1fr)}.tmc-grid{grid-template-columns:1fr}.tmc-value{font-size:20px}.tmc-form{grid-template-columns:1fr}.tmc-head{padding:10px}.tmc-title{font-size:15px}}
+</style>
+<script id="tunapos-manager-control-js">
+(function(){
+  const managerScreens=['transactions','refunds','voids','adjustments','audit','chargebacks','returns','fraud'];
+  const labels={transactions:'Transactions',refunds:'Refunds',voids:'Voids',adjustments:'Adjustments',audit:'Audit Log',chargebacks:'Chargebacks',returns:'Return Analytics',fraud:'AI Fraud Detection'};
+  const orders=[
+    {id:'ORD-8F21A',table:'T-3',server:'Aisha T.',time:'2:34pm',items:3,total:52.38,method:'Tap',status:'approved'},
+    {id:'ORD-3C44B',table:'T-7',server:'Priya P.',time:'2:28pm',items:2,total:23.76,method:'Card',status:'approved'},
+    {id:'ORD-9E12C',table:'Bar-2',server:'Diego F.',time:'2:19pm',items:4,total:144.94,method:'Tap',status:'approved'},
+    {id:'ORD-RF881',table:'T-5',server:'Priya P.',time:'1:42pm',items:2,total:31.20,method:'Card',status:'refunded'},
+    {id:'ORD-VOID1',table:'T-3',server:'Marcus J.',time:'1:20pm',items:1,total:12.96,method:'Card',status:'voided'}
+  ];
+  const audit=[
+    ['12:51pm','Sarah M.','Refund','ORD-RF881','$31.20','Guest complaint','Approved'],
+    ['12:43pm','James M.','Void','ORD-VOID1','$12.96','Training order','Approved'],
+    ['12:21pm','Aisha T.','Discount','ORD-9E12C','$14.49','VIP adjustment','Approved'],
+    ['11:58am','Diego F.','Tip Adjustment','ORD-3C44B','$4.00','Guest request','Approved'],
+    ['11:20am','System','Fraud Flag','Cashier John','Risk 92','Refund spike','Escalated']
+  ];
+  function money(n){return '$'+Number(n).toFixed(2)}
+  function toast(msg,type){try{(window.masterToast||window.showToast||alert)(msg,type||'info')}catch(e){alert(msg)}}
+  function setTitle(t){var el=document.getElementById('top-title'); if(el) el.textContent=t;}
+  function activeTab(id){document.querySelectorAll('.manager-action-tab').forEach(b=>b.classList.toggle('on',b.dataset.managerScreen===id));}
+  function header(title,sub){return `<div class="tmc-head"><div><div class="tmc-title">${title}</div><div class="tmc-sub">${sub}</div></div><div class="tmc-pill">Manager Control</div></div>`}
+  function kpis(list){return `<div class="tmc-kpis">${list.map(x=>`<div class="tmc-kpi ${x.warn?'warn':''}"><div class="tmc-label">${x.label}</div><div class="tmc-value ${x.cls||''}">${x.value}</div><div class="tmc-note">${x.note||''}</div></div>`).join('')}</div>`}
+  function txTable(){return `<table class="tmc-table"><thead><tr><th>Order</th><th>Table</th><th>Server</th><th>Time</th><th>Items</th><th>Total</th><th>Method</th><th>Status</th><th>Action</th></tr></thead><tbody>${orders.map(o=>`<tr><td class="tmc-id">${o.id}</td><td>${o.table}</td><td>${o.server}</td><td>${o.time}</td><td>${o.items}</td><td class="tmc-good">${money(o.total)}</td><td>${o.method}</td><td><span class="tmc-status tmc-${o.status}">${o.status}</span></td><td><button class="tmc-btn" onclick="TunaManagerControl.openRefund('${o.id}')">Refund</button> <button class="tmc-btn danger" onclick="TunaManagerControl.voidOrder('${o.id}')">Void</button></td></tr>`).join('')}</tbody></table>`}
+  function renderTransactions(){return header('Transactions','Search, review, refund, void, or adjust all closed/open orders')+kpis([{label:'Sales Today',value:'$8,420',note:'142 orders',cls:'tmc-good'},{label:'Refunds',value:'$145',note:'1.7% refund rate',warn:true},{label:'Voids',value:'12',note:'3 require review',warn:true},{label:'Avg Ticket',value:'$59.30',note:'↑ $4.20 vs yesterday'},{label:'Open Checks',value:'18',note:'6 active tables'}])+`<div class="tmc-panel tmc-full"><h3>Transaction Log <span class="tmc-tabs-note">Manager PIN required for refunds and voids</span></h3>${txTable()}</div>`}
+  function renderRefunds(){return header('Refunds','Full, partial, and item-level refunds with required reason and manager approval')+kpis([{label:'Refunds Today',value:'$145',warn:true},{label:'Refund Count',value:'5'},{label:'Top Reason',value:'Kitchen',note:'32%'},{label:'Manager Overrides',value:'3',warn:true},{label:'Loyalty Reversal',value:'210 pts'}])+`<div class="tmc-grid"><div class="tmc-panel"><h3>Create Refund</h3><div class="tmc-form"><div class="tmc-field"><label>Order ID</label><input value="ORD-8F21A"></div><div class="tmc-field"><label>Refund Type</label><select><option>Full Refund</option><option>Partial Refund</option><option>Item Refund</option></select></div><div class="tmc-field"><label>Amount</label><input value="52.38"></div><div class="tmc-field"><label>Reason</label><select><option>Kitchen Error</option><option>Wrong Item</option><option>Guest Complaint</option><option>Duplicate Charge</option><option>Training Error</option><option>Other</option></select></div><div class="tmc-field"><label>Manager PIN</label><input type="password" placeholder="Required"></div><div class="tmc-field"><label>Inventory Returned?</label><select><option>No - item consumed</option><option>Yes - return to stock</option></select></div><div class="tmc-field" style="grid-column:1/-1"><label>Notes</label><textarea>Guest reported item issue. Refund approved by manager.</textarea></div></div><br><button class="tmc-btn primary" onclick="TunaManagerControl.approve('Refund saved to audit log')">Approve Refund</button></div><div class="tmc-panel"><h3>Recent Refunds</h3><div class="tmc-alert high"><b>ORD-RF881 · $31.20</b>Guest complaint · Priya P. · Approved by Sarah M.</div><div class="tmc-alert med"><b>ORD-RF440 · $18.00</b>Kitchen error · Aisha T. · Loyalty points reversed</div><div class="tmc-alert low"><b>ORD-RF202 · $6.50</b>Duplicate drink · Diego F.</div></div></div>`}
+  function renderVoids(){return header('Voids','Cancel unpaid or unsettled transactions before batch settlement')+kpis([{label:'Voids Today',value:'12',warn:true},{label:'Training Orders',value:'4'},{label:'Wrong Table',value:'3'},{label:'Duplicate Tickets',value:'2'},{label:'Risk Review',value:'3',warn:true}])+`<div class="tmc-grid"><div class="tmc-panel"><h3>Void Transaction</h3><div class="tmc-form"><div class="tmc-field"><label>Order ID</label><input value="ORD-VOID1"></div><div class="tmc-field"><label>Void Reason</label><select><option>Wrong Order</option><option>Duplicate Order</option><option>Training Order</option><option>Wrong Table</option><option>Kitchen Error</option></select></div><div class="tmc-field"><label>Manager PIN</label><input type="password" placeholder="Required"></div><div class="tmc-field"><label>Notify Kitchen?</label><select><option>Yes - send cancellation</option><option>No</option></select></div></div><br><button class="tmc-btn danger" onclick="TunaManagerControl.approve('Void saved to audit log')">Approve Void</button></div><div class="tmc-panel"><h3>Void Review Queue</h3><div class="tmc-alert high"><b>Marcus J. · 3 voids in 2 hours</b>Above normal pattern · AI review recommended</div><div class="tmc-alert med"><b>Bar-2 duplicate ticket</b>Void before settlement · no refund needed</div></div></div>`}
+  function renderAdjustments(){return header('Adjustments','Discounts, comps, price overrides, tax/tip corrections, and manager approvals')+kpis([{label:'Discounts',value:'$214'},{label:'Comps',value:'$82',warn:true},{label:'Price Overrides',value:'7',warn:true},{label:'Tip Corrections',value:'4'},{label:'Tax Adjustments',value:'1'}])+`<div class="tmc-panel"><h3>New Adjustment</h3><div class="tmc-form"><div class="tmc-field"><label>Order ID</label><input value="ORD-9E12C"></div><div class="tmc-field"><label>Adjustment Type</label><select><option>Discount</option><option>Comp</option><option>Price Override</option><option>Tax Adjustment</option><option>Tip Adjustment</option></select></div><div class="tmc-field"><label>Amount / Percent</label><input value="20%"></div><div class="tmc-field"><label>Reason</label><select><option>VIP Guest</option><option>Service Recovery</option><option>Staff Meal</option><option>Manager Override</option><option>Promotion</option></select></div><div class="tmc-field"><label>Manager PIN</label><input type="password" placeholder="Required"></div><div class="tmc-field"><label>Audit Level</label><select><option>Normal</option><option>High - Owner Review</option></select></div></div><br><button class="tmc-btn primary" onclick="TunaManagerControl.approve('Adjustment approved and logged')">Apply Adjustment</button></div>`}
+  function renderAudit(){return header('Audit Log','Permanent record of refunds, voids, discounts, overrides, chargebacks, and fraud alerts')+kpis([{label:'Audit Events',value:'428'},{label:'High Risk',value:'9',warn:true},{label:'Manager Overrides',value:'31'},{label:'Owner Review',value:'4',warn:true},{label:'Export Ready',value:'CSV/PDF'}])+`<div class="tmc-panel tmc-full"><h3>Immutable Audit Trail</h3><table class="tmc-table"><thead><tr><th>Time</th><th>User</th><th>Action</th><th>Reference</th><th>Amount</th><th>Reason</th><th>Status</th></tr></thead><tbody>${audit.map(a=>`<tr><td>${a[0]}</td><td>${a[1]}</td><td>${a[2]}</td><td class="tmc-id">${a[3]}</td><td>${a[4]}</td><td>${a[5]}</td><td><span class="tmc-status ${a[6]==='Escalated'?'tmc-voided':'tmc-approved'}">${a[6]}</span></td></tr>`).join('')}</tbody></table></div>`}
+  function renderChargebacks(){return header('Chargebacks','Track disputes and evidence for PioneerEpay / processor workflows')+kpis([{label:'Open Cases',value:'3',warn:true},{label:'Pending Evidence',value:'2',warn:true},{label:'Won Rate',value:'78%',cls:'tmc-good'},{label:'At Risk',value:'$486',warn:true},{label:'Avg Resolution',value:'12d'}])+`<div class="tmc-grid"><div class="tmc-panel"><h3>Chargeback Cases</h3><table class="tmc-table"><tr><th>Case</th><th>Order</th><th>Amount</th><th>Reason</th><th>Status</th></tr><tr><td class="tmc-id">CB-2041</td><td>ORD-9E12C</td><td>$144.94</td><td>Cardholder dispute</td><td><span class="tmc-status tmc-open">Evidence Due</span></td></tr><tr><td class="tmc-id">CB-2034</td><td>ORD-3C44B</td><td>$23.76</td><td>Duplicate</td><td><span class="tmc-status tmc-approved">Submitted</span></td></tr></table></div><div class="tmc-panel"><h3>Evidence Packet</h3><div class="tmc-alert low"><b>Auto-collected</b>Receipt, payment method, timestamp, server, table, items, guest history.</div><button class="tmc-btn primary" onclick="TunaManagerControl.approve('Evidence packet prepared')">Prepare Evidence</button> <button class="tmc-btn">Export PDF</button></div></div>`}
+  function renderReturns(){return header('Advanced Return Analytics','Understand refund causes, cost impact, employee patterns, and location risk')+kpis([{label:'Refund Rate',value:'1.7%'},{label:'Void Rate',value:'2.9%',warn:true},{label:'Comp Rate',value:'1.1%'},{label:'Top Reason',value:'Kitchen'},{label:'Loss Impact',value:'$1,284',warn:true}])+`<div class="tmc-grid"><div class="tmc-panel"><h3>Refund Reasons</h3>${[['Kitchen Error',32],['Wrong Item',21],['Guest Complaint',18],['Duplicate Charge',12],['Training Error',9]].map(x=>`<div style="display:grid;grid-template-columns:130px 1fr 40px;gap:10px;align-items:center;margin:12px 0"><span>${x[0]}</span><div class="tmc-risk"><span style="width:${x[1]*2}%"></span></div><b>${x[1]}%</b></div>`).join('')}</div><div class="tmc-panel"><h3>Operational Insight</h3><div class="tmc-alert high"><b>Kitchen Error trend rising</b>32% of refunds tied to kitchen timing or preparation issues.</div><div class="tmc-alert med"><b>Recommended action</b>Review station routing and add expo verification during 6–8pm rush.</div></div></div>`}
+  function renderFraud(){return header('AI Refund Fraud Detection','Behavioral analysis across refunds, voids, discounts, and manager overrides')+kpis([{label:'Fraud Risk Score',value:'76',warn:true},{label:'Flagged Staff',value:'2',warn:true},{label:'Flagged Orders',value:'9',warn:true},{label:'Auto Alerts',value:'5'},{label:'Estimated Loss',value:'$420',warn:true}])+`<div class="tmc-grid"><div class="tmc-panel"><h3>High Risk Alerts</h3><div class="tmc-alert high"><b>Cashier John · Risk 92</b>8 refunds in 2 hours. Normal average: 1. Requires GM review.</div><div class="tmc-alert med"><b>Manager Override Spike</b>Sarah M. approved $2,450 refunds this week vs $380 store average.</div><div class="tmc-alert low"><b>Pattern Cleared</b>Training order voids match approved onboarding session.</div></div><div class="tmc-panel"><h3>AI Controls</h3><div class="tmc-form"><div class="tmc-field"><label>Auto Escalate Above</label><input value="85"></div><div class="tmc-field"><label>Notify</label><select><option>GM + Owner</option><option>Owner Only</option><option>Corporate</option></select></div><div class="tmc-field"><label>Lock Refunds?</label><select><option>Manager PIN required</option><option>Owner PIN required above $100</option></select></div><div class="tmc-field"><label>Audit Mode</label><select><option>Strict</option><option>Standard</option></select></div></div><br><button class="tmc-btn primary" onclick="TunaManagerControl.approve('AI fraud controls updated')">Save AI Controls</button></div></div>`}
+  const renderers={transactions:renderTransactions,refunds:renderRefunds,voids:renderVoids,adjustments:renderAdjustments,audit:renderAudit,chargebacks:renderChargebacks,returns:renderReturns,fraud:renderFraud};
+  function render(id){var el=document.getElementById('sb-'+id); if(!el) return; el.innerHTML='<div class="tmc-wrap">'+renderers[id]()+'</div>';}
+  function activate(id){
+    managerScreens.forEach(s=>{var body=document.getElementById('sb-'+s); if(body) body.classList.toggle('on',s===id); var tab=document.getElementById('st-'+s); if(tab) tab.classList.toggle('on',s===id);});
+    ['order','kds','intel','reports','loyalty','inventory','command'].forEach(s=>{var body=document.getElementById('sb-'+s); if(body) body.classList.remove('on'); var tab=document.getElementById('st-'+s); if(tab) tab.classList.remove('on');});
+    render(id); activeTab(id); setTitle(labels[id]);
+  }
+  function inject(){
+    var tabs=document.querySelector('#mod-pos .screen-tabs'); var screens=document.querySelector('#mod-pos .screens'); if(!tabs||!screens) return;
+    managerScreens.forEach(id=>{
+      if(!document.getElementById('st-'+id)){var b=document.createElement('button'); b.className='stab manager-action-tab'; b.id='st-'+id; b.dataset.managerScreen=id; b.textContent=labels[id].toUpperCase(); b.onclick=()=>activate(id); tabs.appendChild(b)}
+      if(!document.getElementById('sb-'+id)){var d=document.createElement('div'); d.className='screen-body'; d.id='sb-'+id; screens.appendChild(d); render(id)}
+    });
+    try{ if(typeof POS_SCREENS!=='undefined'){managerScreens.forEach(id=>{if(POS_SCREENS.indexOf(id)===-1) POS_SCREENS.push(id)}); } }catch(e){}
+    document.querySelectorAll('#tp-mode-switcher button.manager').forEach(btn=>btn.addEventListener('click',()=>setTimeout(()=>activate('transactions'),90)));
+  }
+  window.TunaManagerControl={activate,openRefund:function(id){activate('refunds');setTimeout(()=>toast('Loaded '+id+' for refund review','info'),80)},voidOrder:function(id){activate('voids');setTimeout(()=>toast('Loaded '+id+' for void review','info'),80)},approve:function(msg){toast(msg||'Manager action approved','ok')}};
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',inject); else inject();
+  setTimeout(inject,600); setTimeout(inject,1800);
+})();
+</script>
+
+
+<!-- TunaPOS Bar Tabs + House Accounts Production Add-On -->
+<style id="tunapos-tabs-house-css">
+  .tp-tabs-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:6px 0 8px!important;}
+  .tp-tab-action-btn{padding:8px 6px;border-radius:8px;border:1px solid var(--rim);background:rgba(0,212,255,.06);color:var(--txt2);font-size:10px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:.03em;text-transform:uppercase;}
+  .tp-tab-action-btn:hover{border-color:rgba(0,212,255,.45);color:var(--neural);background:rgba(0,212,255,.11)}
+  .tp-tab-action-btn.house{background:rgba(212,175,55,.07);}.tp-tab-action-btn.house:hover{border-color:rgba(212,175,55,.45);color:var(--gold)}
+  .tp-tabs-veil{position:fixed;inset:0;background:rgba(2,3,5,.82);backdrop-filter:blur(10px);z-index:99990;display:none;align-items:center;justify-content:center;padding:16px;}
+  .tp-tabs-veil.open{display:flex;}
+  .tp-tabs-modal{width:min(980px,96vw);max-height:88vh;overflow:hidden;border:1px solid var(--rim2);border-radius:18px;background:#090c14;box-shadow:0 30px 90px rgba(0,0,0,.72);display:grid;grid-template-columns:330px 1fr;}
+  .tp-tabs-side{border-right:1px solid var(--rim);background:#060912;padding:14px;overflow:auto;}
+  .tp-tabs-main{padding:16px;overflow:auto;}
+  .tp-tabs-hd{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.tp-tabs-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:900}.tp-tabs-sub{font-size:10px;color:var(--txt3);margin-top:2px}.tp-tabs-close{border:1px solid var(--rim);background:transparent;color:var(--txt3);border-radius:8px;padding:8px 10px;cursor:pointer}.tp-tabs-close:hover{color:var(--danger);border-color:rgba(255,75,110,.35)}
+  .tp-tabs-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}.tp-tabs-kpi{background:var(--card);border:1px solid var(--rim);border-radius:12px;padding:10px}.tp-tabs-kpi b{display:block;font-size:18px;font-family:'Syne',sans-serif}.tp-tabs-kpi span{font-size:9px;color:var(--txt3);font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+  .tp-tabs-card{background:var(--card);border:1px solid var(--rim);border-radius:12px;padding:10px;margin-bottom:8px;cursor:pointer}.tp-tabs-card:hover,.tp-tabs-card.on{border-color:rgba(0,212,255,.4);background:rgba(0,212,255,.06)}.tp-tabs-card h4{font-size:13px;margin-bottom:3px}.tp-tabs-card small{color:var(--txt3);font-size:10px}.tp-tabs-card .amt{float:right;color:var(--bio);font-family:'JetBrains Mono',monospace;font-weight:800}
+  .tp-tabs-form{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}.tp-tabs-field label{display:block;color:var(--txt3);font-size:9px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}.tp-tabs-field input,.tp-tabs-field select,.tp-tabs-field textarea{width:100%;background:var(--raised);border:1px solid var(--rim);color:var(--txt);border-radius:9px;padding:10px;font-family:inherit;font-size:12px;outline:none}.tp-tabs-field textarea{min-height:70px;resize:vertical}.tp-tabs-field input:focus,.tp-tabs-field select:focus,.tp-tabs-field textarea:focus{border-color:var(--neural)}
+  .tp-tabs-btn{border:1px solid var(--rim);background:var(--raised);color:var(--txt2);border-radius:9px;padding:9px 11px;font-size:11px;font-weight:800;cursor:pointer;margin:0 4px 6px 0}.tp-tabs-btn.primary{background:linear-gradient(135deg,var(--neural),#7b2fff);color:#fff;border-color:transparent}.tp-tabs-btn.good{border-color:rgba(0,255,157,.4);color:var(--bio)}.tp-tabs-btn.danger{border-color:rgba(255,75,110,.42);color:var(--danger)}.tp-tabs-btn.gold{border-color:rgba(212,175,55,.42);color:var(--gold)}
+  .tp-tabs-table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--rim);border-radius:12px;overflow:hidden}.tp-tabs-table th,.tp-tabs-table td{text-align:left;padding:9px;border-bottom:1px solid var(--rim);font-size:11px}.tp-tabs-table th{font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.08em}.tp-tabs-id{font-family:'JetBrains Mono',monospace;color:var(--neural);font-weight:800}.tp-tabs-pill{display:inline-block;border:1px solid rgba(0,255,157,.3);background:rgba(0,255,157,.08);color:var(--bio);font-size:8px;font-weight:900;text-transform:uppercase;border-radius:999px;padding:3px 7px}.tp-tabs-pill.house{border-color:rgba(212,175,55,.35);background:rgba(212,175,55,.08);color:var(--gold)}
+  @media(max-width:900px){.tp-tabs-modal{grid-template-columns:1fr}.tp-tabs-side{max-height:210px;border-right:none;border-bottom:1px solid var(--rim)}.tp-tabs-kpis{grid-template-columns:repeat(2,1fr)}.tp-tabs-form{grid-template-columns:1fr}}
+</style>
+<div id="tp-tabs-veil" class="tp-tabs-veil" aria-hidden="true"><div class="tp-tabs-modal"><div class="tp-tabs-side"><div class="tp-tabs-hd"><div><div class="tp-tabs-title">Open Tabs</div><div class="tp-tabs-sub">Bar tabs, table tabs, and house accounts</div></div><button class="tp-tabs-close" onclick="TunaTabs.close()">✕</button></div><div id="tp-tabs-list"></div></div><div class="tp-tabs-main" id="tp-tabs-main"></div></div></div>
+<script id="tunapos-tabs-house-js">
+(function(){
+  const STORE='tunapos_open_tabs_v1';
+  const AUDIT='tunapos_audit_log_v1';
+  const seed=[
+    {id:'TAB-1001',type:'bar',name:'John Smith',seat:'Bar 4',phone:'',status:'open',created:'7:14 PM',items:[{name:'Old Fashioned',qty:2,price:12},{name:'Draft Beer',qty:1,price:6}],preauth:'Manual'},
+    {id:'HOUSE-220',type:'house',name:'ABC Law Firm',seat:'House Account',phone:'303-555-0188',status:'open',created:'6:52 PM',items:[{name:'Catering Deposit',qty:1,price:150}],preauth:'Net 15'}
+  ];
+  function getTabs(){try{return JSON.parse(localStorage.getItem(STORE)||'null')||seed}catch(e){return seed}}
+  function setTabs(x){localStorage.setItem(STORE,JSON.stringify(x));}
+  function audit(action,detail){try{let a=JSON.parse(localStorage.getItem(AUDIT)||'[]');a.unshift({time:new Date().toLocaleString(),action,detail});localStorage.setItem(AUDIT,JSON.stringify(a.slice(0,250)));}catch(e){}}
+  function toast(msg,type){try{(window.masterToast||window.showToast||alert)(msg,type||'info')}catch(e){alert(msg)}}
+  function money(n){return '$'+Number(n||0).toFixed(2)}
+  function total(t){return (t.items||[]).reduce((s,i)=>s+(Number(i.price||0)*Number(i.qty||1)),0)}
+  function currentCart(){try{return Array.isArray(window.cart)?window.cart:cart}catch(e){return []}}
+  function setCart(items){try{if(Array.isArray(window.cart)){window.cart.length=0;items.forEach(i=>window.cart.push(i));}else if(typeof cart!=='undefined'){cart.length=0;items.forEach(i=>cart.push(i));} if(typeof renderCart==='function')renderCart(); if(typeof updateTotals==='function')updateTotals();}catch(e){}}
+  function normalizeCartItem(i){return {name:i.name||i.title||'Item',qty:Number(i.qty||i.quantity||1),price:Number(i.price||i.amount||0),mods:i.mods||i.modifiers||[]};}
+  function kpis(tabs){let open=tabs.filter(t=>t.status==='open');let bar=open.filter(t=>t.type==='bar').length;let house=open.filter(t=>t.type==='house').length;let value=open.reduce((s,t)=>s+total(t),0);return `<div class="tp-tabs-kpis"><div class="tp-tabs-kpi"><span>Open Tabs</span><b>${open.length}</b></div><div class="tp-tabs-kpi"><span>Bar Tabs</span><b>${bar}</b></div><div class="tp-tabs-kpi"><span>House Accts</span><b>${house}</b></div><div class="tp-tabs-kpi"><span>Open Balance</span><b>${money(value)}</b></div></div>`}
+  function list(selected){let tabs=getTabs();document.getElementById('tp-tabs-list').innerHTML=tabs.map(t=>`<div class="tp-tabs-card ${selected===t.id?'on':''}" onclick="TunaTabs.view('${t.id}')"><h4>${t.name}<span class="amt">${money(total(t))}</span></h4><small>${t.id} · ${t.type==='house'?'House Account':(t.seat||'Bar Tab')} · ${t.status}</small></div>`).join('')||'<div class="tp-tabs-card"><h4>No open tabs</h4><small>Create a bar tab or house account.</small></div>';}
+  function mainHome(){let tabs=getTabs();document.getElementById('tp-tabs-main').innerHTML=kpis(tabs)+`<div class="tp-tabs-hd"><div><div class="tp-tabs-title">Tabs & House Accounts</div><div class="tp-tabs-sub">Start tabs, add current cart, close tabs, or charge house accounts.</div></div></div><div class="tp-tabs-form"><div class="tp-tabs-field"><label>Type</label><select id="new-tab-type"><option value="bar">Bar Tab</option><option value="table">Table Tab</option><option value="house">House Account</option></select></div><div class="tp-tabs-field"><label>Customer / Account Name</label><input id="new-tab-name" placeholder="Customer name or business"></div><div class="tp-tabs-field"><label>Seat / Table</label><input id="new-tab-seat" placeholder="Bar 4, Table 8, House Account"></div><div class="tp-tabs-field"><label>Phone / Reference</label><input id="new-tab-phone" placeholder="Optional"></div><div class="tp-tabs-field"><label>Card Preauth</label><select id="new-tab-preauth"><option>Manual - no card on file</option><option>Card preauth pending NABC</option><option>House account terms</option></select></div><div class="tp-tabs-field"><label>Opening Note</label><input id="new-tab-note" placeholder="Optional note"></div></div><button class="tp-tabs-btn primary" onclick="TunaTabs.create()">Start Tab</button><button class="tp-tabs-btn house" onclick="TunaTabs.quickHouse()">New House Account</button><button class="tp-tabs-btn" onclick="TunaTabs.importCartPrompt()">Add Current Cart to Tab</button><div style="margin-top:12px"><table class="tp-tabs-table"><thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Balance</th><th>Status</th><th>Action</th></tr></thead><tbody>${tabs.map(t=>`<tr><td class="tp-tabs-id">${t.id}</td><td>${t.name}</td><td><span class="tp-tabs-pill ${t.type==='house'?'house':''}">${t.type}</span></td><td>${money(total(t))}</td><td>${t.status}</td><td><button class="tp-tabs-btn" onclick="TunaTabs.view('${t.id}')">Open</button></td></tr>`).join('')}</tbody></table></div>`;}
+  function open(){document.getElementById('tp-tabs-veil')?.classList.add('open');list();mainHome();}
+  function close(){document.getElementById('tp-tabs-veil')?.classList.remove('open');}
+  function create(){let tabs=getTabs();let type=document.getElementById('new-tab-type').value;let name=(document.getElementById('new-tab-name').value||'Guest Tab').trim();let seat=(document.getElementById('new-tab-seat').value||'Bar').trim();let phone=document.getElementById('new-tab-phone').value||'';let preauth=document.getElementById('new-tab-preauth').value;let prefix=type==='house'?'HOUSE':'TAB';let id=prefix+'-'+Math.floor(1000+Math.random()*9000);let t={id,type,name,seat,phone,preauth,status:'open',created:new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),items:[],note:document.getElementById('new-tab-note').value||''};tabs.unshift(t);setTabs(tabs);audit('Start Tab',`${id} · ${name} · ${type}`);toast(`${name} tab opened`,'ok');list(id);view(id);}
+  function quickHouse(){open();setTimeout(()=>{document.getElementById('new-tab-type').value='house';document.getElementById('new-tab-seat').value='House Account';document.getElementById('new-tab-preauth').value='House account terms';document.getElementById('new-tab-name').focus();},50)}
+  function view(id){let tabs=getTabs(),t=tabs.find(x=>x.id===id);if(!t)return;list(id);document.getElementById('tp-tabs-main').innerHTML=`<div class="tp-tabs-hd"><div><div class="tp-tabs-title">${t.name} <span class="tp-tabs-pill ${t.type==='house'?'house':''}">${t.type}</span></div><div class="tp-tabs-sub">${t.id} · ${t.seat||''} · Opened ${t.created} · ${t.preauth||''}</div></div><div class="tp-tabs-kpi"><span>Balance</span><b>${money(total(t))}</b></div></div><div style="margin-bottom:10px"><button class="tp-tabs-btn primary" onclick="TunaTabs.addCart('${id}')">Add Current Cart</button><button class="tp-tabs-btn good" onclick="TunaTabs.loadToCart('${id}')">Load to Checkout</button><button class="tp-tabs-btn gold" onclick="TunaTabs.addManual('${id}')">Add Manual Charge</button><button class="tp-tabs-btn danger" onclick="TunaTabs.closeTab('${id}')">Close Tab</button></div><table class="tp-tabs-table"><thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead><tbody>${(t.items||[]).map(i=>`<tr><td>${i.name}</td><td>${i.qty||1}</td><td>${money(i.price)}</td><td>${money((i.qty||1)*i.price)}</td></tr>`).join('')||'<tr><td colspan="4">No items yet.</td></tr>'}</tbody></table><div style="margin-top:12px" class="tp-tabs-form"><div class="tp-tabs-field"><label>Customer Phone</label><input value="${t.phone||''}" readonly></div><div class="tp-tabs-field"><label>Preauth / Terms</label><input value="${t.preauth||''}" readonly></div><div class="tp-tabs-field"><label>Status</label><input value="${t.status}" readonly></div><div class="tp-tabs-field"><label>Audit</label><input value="Tracked locally; sync with Back Office later" readonly></div></div>`;}
+  function addCart(id){let c=currentCart().map(normalizeCartItem);if(!c.length){toast('Cart is empty. Add items first.','err');return;}let tabs=getTabs(),t=tabs.find(x=>x.id===id);if(!t)return;t.items=(t.items||[]).concat(c);setTabs(tabs);audit('Add Cart to Tab',`${id} · ${c.length} item(s)`);toast(`${c.length} item(s) added to ${t.name}`,'ok');view(id);}
+  function importCartPrompt(){let c=currentCart();if(!c.length){toast('Cart is empty. Add items first.','err');return;}let tabs=getTabs().filter(t=>t.status==='open');if(!tabs.length){toast('No open tabs. Start a tab first.','err');return;}view(tabs[0].id);toast('Select a tab, then tap Add Current Cart','info');}
+  function loadToCart(id){let t=getTabs().find(x=>x.id===id);if(!t)return;setCart((t.items||[]).map(x=>({name:x.name,qty:x.qty,price:x.price,mods:x.mods||[]})));audit('Load Tab to Checkout',id);toast(`${t.name} loaded to checkout`,'ok');close();}
+  function addManual(id){let name=prompt('Manual charge name:','Special Charge');if(!name)return;let amount=parseFloat(prompt('Amount:','10.00'));if(isNaN(amount)||amount<=0){toast('Invalid amount','err');return;}let tabs=getTabs(),t=tabs.find(x=>x.id===id);if(!t)return;t.items=t.items||[];t.items.push({name,qty:1,price:amount});setTabs(tabs);audit('Manual Tab Charge',`${id} · ${name} · ${money(amount)}`);toast('Manual charge added','ok');view(id);}
+  function closeTab(id){let tabs=getTabs(),t=tabs.find(x=>x.id===id);if(!t)return;if(!confirm(`Close ${t.name} tab for ${money(total(t))}?`))return;t.status='closed';t.closed=new Date().toLocaleString();setTabs(tabs);audit('Close Tab',`${id} · ${money(total(t))}`);setCart((t.items||[]).map(x=>({name:x.name,qty:x.qty,price:x.price,mods:x.mods||[]})));toast('Tab closed and loaded to checkout','ok');close();}
+  function injectButtons(){let cb=document.querySelector('.checkout-bar');if(!cb||document.getElementById('tp-tabs-actions'))return;let row=document.createElement('div');row.id='tp-tabs-actions';row.className='tp-tabs-btn-row';row.innerHTML='<button class="tp-tab-action-btn" onclick="TunaTabs.open()">🍺 Bar / Open Tabs</button><button class="tp-tab-action-btn house" onclick="TunaTabs.quickHouse()">🏠 House Account</button>';cb.insertBefore(row,cb.firstChild);}
+  window.TunaTabs={open,close,create,quickHouse,view,addCart,loadToCart,addManual,closeTab,importCartPrompt};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',injectButtons);else injectButtons();setTimeout(injectButtons,500);setTimeout(injectButtons,1500);
 })();
 </script>
 
