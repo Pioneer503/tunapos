@@ -2182,9 +2182,9 @@ html,body{height:100%;background:var(--void);color:var(--txt);font-family:"Instr
 
 
 
-<!-- TunaPOS Volcora Production Patch v1 - 1366x768 Android 14 -->
+<!-- TunaPOS Production Patch v1 - 1366x768 Android 14 -->
 <style id="tunapos-volcora-production-patch">
-/* VOLCORA 15.6 ANDROID 14 PRODUCTION FIT */
+/* HARDWARE 15.6 ANDROID 14 PRODUCTION FIT */
 @media screen and (max-width: 1400px) and (max-height: 820px) {
   html, body { width:100vw; height:100vh; overflow:hidden !important; font-size:12px !important; }
   #tunapos-nav { height:36px !important; padding:0 8px !important; gap:5px !important; }
@@ -2268,7 +2268,7 @@ body.tunapos-cashier-mode .stab[data-manager-only="true"] { display:none !import
 <script id="tunapos-volcora-production-js">
 (function(){
   window.TUNAPOS_PRODUCTION = {
-    hardware:'VOLCORA_ANDROID_14_RK3576',
+    hardware:'HARDWARE_ANDROID_14_RK3576',
     targetResolution:'1366x768',
     printer:{host:'10.0.0.2',port:9100,width:'72mm',protocol:'escpos'},
     apiBase:'/api'
@@ -2278,7 +2278,7 @@ body.tunapos-cashier-mode .stab[data-manager-only="true"] { display:none !import
     document.body.classList.add('tunapos-volcora-ready');
     var b=document.createElement('div');
     b.className='tunapos-prod-badge';
-    b.textContent='VOLCORA READY • '+window.innerWidth+'×'+window.innerHeight;
+    b.textContent='HARDWARE READY • '+window.innerWidth+'×'+window.innerHeight;
     document.body.appendChild(b);
     setTimeout(function(){ b.style.display='none'; },7000);
   });
@@ -2388,7 +2388,7 @@ body.tunapos-cashier-mode .stab[data-manager-only="true"] { display:none !import
     <button class="nav-tab" onclick="switchModule('backoffice')" id="ntab-backoffice">📊 Back Office</button>
     <button class="nav-tab" onclick="switchModule('inventory')" id="ntab-inventory" style="display:none">📦 Inventory</button>
     <button class="nav-tab" onclick="switchModule('split')" id="ntab-split">✂️ Split Check</button>
-    <button class="nav-tab" onclick="switchModule('nabc')" id="ntab-nabc">⚡ PioneerePay</button>
+    <button class="nav-tab" onclick="switchModule('nabc')" id="ntab-nabc">⚡ North American Bancard</button>
     <button class="nav-tab" onclick="switchModule('hq')" id="ntab-hq" style="display:none">🏢 Franchise HQ</button>
     <button class="nav-tab" onclick="switchModule('portal')" id="ntab-portal" style="display:none">👤 Franchisee</button>
   </div>
@@ -2620,7 +2620,7 @@ function tunaLogin() {
   <div class="screen-tabs">
     <button class="stab on" onclick="POS_goto('order')" id="st-order">Order</button>
     <button class="stab" onclick="POS_goto('kds')" id="st-kds">Kitchen Display</button>
-    <button class="stab" onclick="POS_goto('intel')" id="st-intel">Neural Intelligence</button>
+    <button class="stab" onclick="POS_goto('intel')" id="st-intel">Tuna AI</button>
     <button class="stab" onclick="POS_goto('reports')" id="st-reports">Reports</button>
     <button class="stab" onclick="POS_goto('loyalty')" id="st-loyalty">Guest Loyalty</button>
     <button class="stab" onclick="POS_goto('inventory')" id="st-inventory">Inventory</button>
@@ -2756,7 +2756,7 @@ function tunaLogin() {
 <!-- Tier Badge Overlay -->
 <div class="tier-badge-overlay" id="tierBadgeOverlay">
   <span id="tboEmoji">⚡</span>
-  <span class="tbo-name" id="tboName">FULL ENTERPRISE</span>
+  <span class="tbo-name" id="tboName">COMMAND CENTER</span>
   <span class="tbo-desc" id="tboDesc">All depts · dynamic pricing · AI · Brewery + Rooftop</span>
 </div>
 
@@ -2885,7 +2885,7 @@ const TIER_CONFIG = {
   brewery:    { name:'BREWERY',        desc:'Brewery Tap Room + Bar · craft focus',                   emoji:'🍺', depts:['brewery','bar'] },
   rooftop:    { name:'ROOFTOP VENUE',  desc:'Rooftop + Bar + Coffee · premium terrace',               emoji:'🌇', depts:['rooftop','bar','coffee'] },
   restaurant: { name:'RESTAURANT',     desc:'Full dining · Kitchen, Bar, Sushi, Coffee, Brunch',      emoji:'🍽️', depts:['kitchen','bar','sushi','coffee','brunch'] },
-  full:       { name:'FULL ENTERPRISE',desc:'All depts · dynamic pricing · AI · Brewery + Rooftop',  emoji:'⚡', depts:['kitchen','bar','sushi','coffee','brewery','rooftop','brunch'] },
+  full:       { name:'COMMAND CENTER',desc:'All depts · dynamic pricing · AI · Brewery + Rooftop',  emoji:'⚡', depts:['kitchen','bar','sushi','coffee','brewery','rooftop','brunch'] },
 };
 
 const SURGE_MULT = 1.12;
@@ -3079,7 +3079,7 @@ let sessionOrders=[...SESSION_ORDERS];
 const KDS_TICKETS=[{id:1,table:"Table 3",station:"kitchen",lines:[{q:1,n:"Ribeye 8oz",m:"Med rare, Chimichurri"},{q:2,n:"Grilled Chicken",m:"Rice, BBQ"}],ts:Date.now()-420000},{id:2,table:"Bar 2",station:"bar",lines:[{q:2,n:"Old Fashioned",m:"Big cube, Double"},{q:1,n:"Margarita",m:"Rocks, Salted"}],ts:Date.now()-180000},{id:3,table:"Table 1",station:"sushi",lines:[{q:1,n:"Spicy Tuna Roll",m:"Extra hot, Sesame"},{q:3,n:"California Roll",m:"Ginger"}],ts:Date.now()-60000},{id:4,table:"Table 5",station:"kitchen",lines:[{q:1,n:"Pasta Carbonara",m:"Extra bacon"}],ts:Date.now()-660000},{id:5,table:"Table 7",station:"expo",lines:[{q:2,n:"NY Strip 12oz",m:"Well done"},{q:1,n:"Latte",m:"Large, Oat, Iced"}],ts:Date.now()-300000}];
 let kdsTickets=[...KDS_TICKETS];
 var _SCREENS_1 =['order','kds','intel','reports','loyalty','inventory'];
-const TITLES_MAP={order:'New Order',kds:'Kitchen Display',intel:'Neural Intelligence',reports:'Analytics & Reports',loyalty:'Guest Loyalty Engine',inventory:'Inventory & IoT'};
+const TITLES_MAP={order:'New Order',kds:'Kitchen Display',intel:'Tuna AI',reports:'Analytics & Reports',loyalty:'Guest Loyalty Engine',inventory:'Inventory & IoT'};
 function goto(id){SCREENS.forEach(s=>{document.getElementById('sb-'+s).classList.toggle('on',s===id);document.getElementById('ni-'+s)?.classList.toggle('on',s===id);document.getElementById('st-'+s)?.classList.toggle('on',s===id);});document.getElementById('top-title').textContent=TITLES_MAP[id]||id;if(id==='kds')renderKDS();if(id==='intel')renderIntel();if(id==='reports')renderReports();if(id==='loyalty')renderLoyalty();if(id==='inventory')renderInventory(INVENTORY_DATA);}
 function buildTables(){const g=document.getElementById('table-grid');g.innerHTML='';const tables=[{n:'T-1',st:'active'},{n:'T-2',st:'busy'},{n:'T-3',st:'busy'},{n:'T-4',st:''},{n:'T-5',st:'busy'},{n:'T-6',st:''},{n:'T-7',st:'flag'},{n:'T-8',st:''},{n:'Bar',st:'busy'}];tables.forEach(t=>{const d=document.createElement('div');d.className='tbl-cell'+(t.n===activeTable?' active':t.st?' '+t.st:'');d.innerHTML=`<span class="tbl-num">${t.n.replace('T-','')}</span>${t.st||'—'}`;d.onclick=()=>{activeTable=t.n;buildTables();showToast('Table '+t.n+' selected','info')};g.appendChild(d);});}
 function openModal(item){pendingItem=item;pendingMods={};document.getElementById('mn-name').textContent=item.name;document.getElementById('mn-price').textContent='$'+item.price.toFixed(2);const body=document.getElementById('mn-body');body.innerHTML='';const mods=item.mods||{};if(!Object.keys(mods).length){confirmAdd();return;}Object.entries(mods).forEach(([grp,opts])=>{const g=document.createElement('div');g.innerHTML=`<div class="mg-label">${grp}</div><div class="mg-opts" id="mgo-${grp.replace(/\s/g,'_')}"></div>`;body.appendChild(g);const row=g.querySelector('.mg-opts');opts.forEach(opt=>{const btn=document.createElement('button');btn.className='mg-opt';btn.textContent=opt;btn.onclick=()=>{row.querySelectorAll('.mg-opt').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');pendingMods[grp]=opt};row.appendChild(btn);});if(opts.length){row.firstChild.classList.add('sel');pendingMods[grp]=opts[0];}});const nw=document.createElement('div');nw.innerHTML='<div class="mg-label">Special Instructions</div><textarea class="modal-notes" id="m-notes" placeholder="Allergies, preferences…"></textarea>';body.appendChild(nw);document.getElementById('mod-modal').classList.add('open');}
@@ -3119,7 +3119,7 @@ function tick(){const n=new Date();document.getElementById('clock').textContent=
 
 // ── KILLER FEATURES ──
 function startVoiceOrder(){if('SpeechRecognition' in window||'webkitSpeechRecognition' in window){const r=new(window.SpeechRecognition||window.webkitSpeechRecognition)();r.lang='en-US';r.onstart=()=>showToast('🎤 Listening...','info');r.onresult=(e)=>{const s=e.results[0][0].transcript.toLowerCase();const c=Math.round(e.results[0][0].confidence*100);showToast(`🗣️ Heard: "${s}" (${c}%)`,'info');};r.onerror=(e)=>showToast(`🎤 Error: ${e.error}`,'err');r.start();}else{showToast('🎤 Voice not supported','err');}}
-function cloneVenueDNA(){const v=document.getElementById('venue-sel').value;const n=prompt('Clone operations to new venue:');if(n)showToast(`🧬 DNA Clone: "${v}" → "${n}"`,'ok');}
+function cloneVenueDNA(){const v=document.getElementById('venue-sel').value;const n=prompt('Clone operations to new venue:');if(n)showToast(`🧬 Tuna AI: "${v}" → "${n}"`,'ok');}
 
 function auditAction(action, payload){
   const log=JSON.parse(localStorage.getItem('tunapos_audit_log')||'[]');
@@ -3162,7 +3162,7 @@ function noSaleOpenDrawer(){
   /* Production note: cash drawer opens by sending ESC/POS pulse: 1B 70 00 19 FA to printer/cash-drawer port. */
 }
 
-function printVocoraThermal(){if(!cart.length){showToast('❌ No order to print','err');return;}showToast('📠 Vocora thermal: Connecting...','info');setTimeout(()=>showToast('📠 Receipt printing (Volcora ESC/POS via 10.0.0.2:9100)','ok'),1000);}
+function printPrinterThermal(){if(!cart.length){showToast('❌ No order to print','err');return;}showToast('📠 Printer thermal: Connecting...','info');setTimeout(()=>showToast('📠 Receipt printing (Hardware ESC/POS via 10.0.0.2:9100)','ok'),1000);}
 
 // ── INIT ──
 buildTables();
@@ -3177,7 +3177,7 @@ setTimeout(()=>{
   // Voice button
   if(!document.getElementById('voice-btn')){const btn=document.createElement('div');btn.id='voice-btn';btn.innerHTML='🎤';btn.style.cssText='position:fixed;bottom:30px;right:30px;width:68px;height:68px;background:linear-gradient(135deg,#7b2fff,#00d4ff);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 0 30px rgba(123,47,255,0.8);cursor:pointer;z-index:999;border:2px solid #00d4ff';btn.onclick=startVoiceOrder;document.body.appendChild(btn);}
   // Agent menu
-  const cb=document.querySelector('.checkout-bar');if(cb&&!document.getElementById('killer-menu')){const m=document.createElement('div');m.id='killer-menu';m.style.cssText='margin-bottom:8px;display:grid;grid-template-columns:1fr 1fr;gap:4px';m.innerHTML=`<button onclick="cloneVenueDNA()" style="padding:6px;border-radius:var(--r-xs);border:1px solid var(--rim);background:transparent;color:var(--txt2);font-size:10px;font-weight:600;cursor:pointer">🧬 DNA Clone</button><button onclick="printVocoraThermal()" style="padding:6px;border-radius:var(--r-xs);border:1px solid var(--rim);background:transparent;color:var(--txt2);font-size:10px;font-weight:600;cursor:pointer">📠 Vocora Print</button>`;cb.insertBefore(m,cb.firstChild);}
+  const cb=document.querySelector('.checkout-bar');if(cb&&!document.getElementById('killer-menu')){const m=document.createElement('div');m.id='killer-menu';m.style.cssText='margin-bottom:8px;display:grid;grid-template-columns:1fr 1fr;gap:4px';m.innerHTML=`<button onclick="cloneVenueDNA()" style="padding:6px;border-radius:var(--r-xs);border:1px solid var(--rim);background:transparent;color:var(--txt2);font-size:10px;font-weight:600;cursor:pointer">🧬 Tuna AI</button><button onclick="printPrinterThermal()" style="padding:6px;border-radius:var(--r-xs);border:1px solid var(--rim);background:transparent;color:var(--txt2);font-size:10px;font-weight:600;cursor:pointer">📠 Print Receipt</button>`;cb.insertBefore(m,cb.firstChild);}
   console.log('%c🚀 TunaPOS — Smart Menu + Killer Mode Ready','color:#00d4ff;font-size:14px;font-weight:bold');
 },500);
 </script>
@@ -3584,8 +3584,8 @@ const SETTINGS_DATA = {
     {lbl:"Happy Hour Discount",desc:"Automatic discount during happy hour window",val:false,type:"toggle"},
     {lbl:"Rounding",desc:"Round totals to nearest cent",val:"$0.01",type:"select",opts:["$0.01","$0.05","$0.10","$0.25","$1.00"]},
   ]},
-  payments:{title:"Payment Processing",sub:"PioneerePay integration and payment methods",rows:[
-    {lbl:"Gateway",desc:"Primary payment processor",val:"PioneerePay",type:"input"},
+  payments:{title:"Payment Processing",sub:"North American Bancard integration and payment methods",rows:[
+    {lbl:"Gateway",desc:"Primary payment processor",val:"North American Bancard",type:"input"},
     {lbl:"Merchant ID",desc:"Your NABC merchant identifier",val:"TUNAPOS-ENT-****",type:"input"},
     {lbl:"Terminal ID",desc:"Volcore V1 terminal authorization code",val:"TID-VOL-****",type:"input"},
     {lbl:"Tap-to-Pay (NFC)",desc:"Apple Pay, Google Pay, Samsung Pay",val:true,type:"toggle"},
@@ -3596,8 +3596,8 @@ const SETTINGS_DATA = {
     {lbl:"Biometric Pay",desc:"Fingerprint/facial payment verification",val:true,type:"toggle"},
     {lbl:"Settlement",desc:"Automatic ACH settlement schedule",val:"Daily — Next Business Day",type:"select",opts:["Daily — Next Business Day","Weekly — Monday","Bi-weekly"]},
   ]},
-  receipts:{title:"Receipts & Printing",sub:"Volcora built-in ESC/POS printer and receipt configuration",rows:[
-    {lbl:"Printer Model",desc:"Connected thermal receipt printer",val:"Volcora Built-in ESC/POS Ethernet",type:"input"},
+  receipts:{title:"Receipts & Printing",sub:"Hardware built-in ESC/POS printer and receipt configuration",rows:[
+    {lbl:"Printer Model",desc:"Connected thermal receipt printer",val:"Hardware Built-in ESC/POS Ethernet",type:"input"},
     {lbl:"Printer IP",desc:"Local network IP address of printer",val:"10.0.0.2",type:"input"},
     {lbl:"Auto-Print Receipt",desc:"Automatically print after every payment",val:false,type:"toggle"},
     {lbl:"Email Receipt",desc:"Send digital receipt to guest email",val:true,type:"toggle"},
@@ -3605,7 +3605,7 @@ const SETTINGS_DATA = {
     {lbl:"Logo on Receipt",desc:"Print TunaPOS logo on receipts",val:true,type:"toggle"},
     {lbl:"Receipt Footer",desc:"Custom message at bottom of receipt",val:"Thank you for dining with us!",type:"input"},
   ]},
-  neural:{title:"Neural Intelligence Engine",sub:"AI-powered pricing, predictions, and behavioral analytics",rows:[
+  neural:{title:"Tuna AI Engine",sub:"AI-powered pricing, predictions, and behavioral analytics",rows:[
     {lbl:"Neural Engine",desc:"Master on/off for all AI features",val:true,type:"toggle"},
     {lbl:"Smart Picks",desc:"AI-curated menu recommendations per session",val:true,type:"toggle"},
     {lbl:"Behavioral Analysis",desc:"Guest mood and behavior pattern tracking",val:true,type:"toggle"},
@@ -4493,8 +4493,8 @@ function saveReceiptConfig() {
 }
 
 function printTestReceipt() {
-  showToast('Test receipt sent to Volcora 10.0.0.2:9100', 'info');
-  // In production: POST to /api/print/vocora with receipt lines
+  showToast('Test receipt sent to Hardware 10.0.0.2:9100', 'info');
+  // In production: POST to /api/print/printer with receipt lines
 }
 
 </script>
@@ -4717,7 +4717,7 @@ function printTestReceipt() {
       <div class="nabc-header fadein">
         <div class="nabc-logo">NORTH<br>AMERICA<br>BANKCARD</div>
         <div class="nabc-info">
-          <div class="nabc-name">PioneerePay — Payment Gateway</div>
+          <div class="nabc-name">North American Bancard — Payment Gateway</div>
           <div class="nabc-sub">TunaPOS Enterprise Integration · Nationwide merchant processing</div>
           <div class="nabc-status">
             <div class="nabc-connecting" id="nabc-status-badge">⏳ CONNECTING TOMORROW</div>
@@ -4756,7 +4756,7 @@ function printTestReceipt() {
       </div>
 
       <!-- Gateway config -->
-      <div class="sec-title"><span>PioneerePay — Gateway Configuration</span><div class="sec-line"></div></div>
+      <div class="sec-title"><span>North American Bancard — Gateway Configuration</span><div class="sec-line"></div></div>
       <div class="gateway-config fadein">
         <div class="config-row"><span class="cfg-lbl">Gateway Endpoint</span><span class="cfg-val">https://gateway.nabankcard.com/v2/tunapos</span><span class="cfg-status cfg-pending">PENDING</span></div>
         <div class="config-row"><span class="cfg-lbl">Merchant ID</span><span class="cfg-val">TUNAPOS-ENT-[ASSIGNED TOMORROW]</span><span class="cfg-status cfg-pending">PENDING</span></div>
@@ -4849,7 +4849,7 @@ function printTestReceipt() {
         <div id="hw-fleet-body"></div>
       </div>
 
-      <div class="sec-title"><span>Volcore + PioneerePay Integration</span><div class="sec-line"></div></div>
+      <div class="sec-title"><span>Volcore + North American Bancard Integration</span><div class="sec-line"></div></div>
       <div class="gateway-config fadein">
         <div class="config-row"><span class="cfg-lbl">Hardware Auth</span><span class="cfg-val">Volcore V1/V2 → NABC EMV certified</span><span class="cfg-status cfg-ok">CERTIFIED</span></div>
         <div class="config-row"><span class="cfg-lbl">Tap-to-Pay</span><span class="cfg-val">NFC · Apple Pay · Google Pay · Samsung Pay</span><span class="cfg-status cfg-ok">READY</span></div>
@@ -5204,7 +5204,7 @@ function simulateNABCConnect() {
       badge.textContent = '✓ GATEWAY READY';
       badge.className = 'nabc-ready';
       txt.textContent = 'Credentials loaded · All terminals authorized · Processing active';
-      showToast('PioneerePay — Gateway connected!', 'ok');
+      showToast('North American Bancard — Gateway connected!', 'ok');
     }
   }, 8000); // simulates connecting after 8s for demo
 }
@@ -5228,7 +5228,7 @@ simulateNABCConnect();
 
 console.log('%c🏢 TunaPOS Franchise HQ — Loaded','color:#00d4ff;font-size:14px;font-weight:bold');
 console.log('%c🌐 Nationwide · 12 locations · 3 brands · 34 Volcore terminals','color:#00ff9d;font-size:11px');
-console.log('%c💳 PioneerePay — connecting tomorrow','color:#ffb547;font-size:11px');
+console.log('%c💳 North American Bancard — connecting tomorrow','color:#ffb547;font-size:11px');
 </script>
 </div>
 
@@ -6397,7 +6397,7 @@ console.log("%c3 modes: By Item · Equal · Custom % · NABC payment integration
     <div class="nabc-logo-chip">PIONEREPAY</div>
     <div class="vsep"></div>
     <div>
-      <div class="tb-name">PioneerePay Payment Gateway</div>
+      <div class="tb-name">North American Bancard Payment Gateway</div>
       <div class="tb-sub">PIONEER ENTERPRISE SOLUTIONS · PAYMENT PROCESSING</div>
     </div>
     <div class="vsep"></div>
@@ -6495,7 +6495,7 @@ console.log("%c3 modes: By Item · Equal · Custom % · NABC payment integration
           <button class="btn btn-secondary btn-sm" onclick="clearLog()">Clear</button>
         </div>
         <div class="log-box fadein" id="gw-log">
-          <div class="log-info">[SYSTEM] TunaPOS PioneerePay Payment Gateway integration loaded</div>
+          <div class="log-info">[SYSTEM] TunaPOS North American Bancard Payment Gateway integration loaded</div>
           <div class="log-warn">[CONFIG] Sandbox: https://epi.epxuap.com — enter credentials to activate</div>
           <div class="log-info">[AUTH] HMAC-SHA256 signing ready via Web Crypto API</div>
           <div class="log-info">[NOTE] Production calls route via FastAPI backend 35.88.253.122 (avoids CORS)</div>
@@ -6664,7 +6664,7 @@ console.log("%c3 modes: By Item · Equal · Custom % · NABC payment integration
     <!-- ── API DOCS ── -->
     <div class="screen" id="sc-docs">
       <div class="scr-body">
-        <div class="sec"><span>PioneerePay Payment Gateway — Endpoint Reference</span><div class="sec-line"></div>
+        <div class="sec"><span>North American Bancard Payment Gateway — Endpoint Reference</span><div class="sec-line"></div>
           <span style="font-size:9px;color:var(--txt3)">Base: https://epi.epxuap.com</span>
         </div>
         <div style="background:var(--card);border:1px solid rgba(77,159,255,0.2);border-radius:var(--r);padding:14px;margin-bottom:4px" class="fadein">
@@ -7158,12 +7158,12 @@ function tick(){ document.getElementById('clock').textContent=new Date().toLocal
 setInterval(tick,1000); tick();
 
 // ── INIT ──────────────────────────────────────────────────────────
-addLog('ok','PioneerePay Payment Gateway — TunaPOS integration ready');
+addLog('ok','North American Bancard Payment Gateway — TunaPOS integration ready');
 addLog('warn','Step 1: Enter CUST_NBR, MERCH_NBR, DBA_NBR, TERMINAL_NBR from NABC dashboard');
 addLog('warn','Step 2: Enter EPI Key (shared secret for HMAC-SHA256 signing)');
 addLog('info','Step 3: Save credentials → Test Connection → process sandbox transactions');
 addLog('info','Signing method: HMAC-SHA256(endpoint + JSON_payload, epiKey) per EPX spec');
-console.log('%c💳 TunaPOS PioneerePay — EPX API v2','color:#4d9fff;font-size:14px;font-weight:bold');
+console.log('%c💳 TunaPOS North American Bancard — EPX API v2','color:#4d9fff;font-size:14px;font-weight:bold');
 console.log('%cSpec-accurate: HMAC-SHA256 | code 00 approval | reference always returned','color:#00ff9d;font-size:11px');
 </script>
 </div>
@@ -7425,7 +7425,7 @@ const STAFF_DATA = [
 const HQ_MESSAGES = [
   {from:"HQ — Brand Team",subject:"New Seasonal Menu — Summer 2025",body:"Please review the attached Summer 2025 menu additions. These will be mandatory from June 15. Items include: Tuna Poke Bowl ($18), Mango Margarita ($13), and Summer Salad ($12). Approve in your portal by June 10.",time:"2h ago",unread:true,urgent:false},
   {from:"HQ — Compliance",subject:"Compliance Score Alert",body:"Your location compliance score has dropped from 94% to 91%. Primary issue: two servers completed alcohol training but certifications not uploaded. Please upload within 48 hours to avoid flag.",time:"6h ago",unread:true,urgent:true},
-  {from:"HQ — Finance",subject:"Royalty Settlement Confirmation",body:"This week's royalty settlement of $3,138.00 has been processed via PioneerePay ACH. Funds will transfer to HQ account by Monday 6am. Thank you for your continued partnership.",time:"1d ago",unread:false,urgent:false},
+  {from:"HQ — Finance",subject:"Royalty Settlement Confirmation",body:"This week's royalty settlement of $3,138.00 has been processed via North American Bancard ACH. Funds will transfer to HQ account by Monday 6am. Thank you for your continued partnership.",time:"1d ago",unread:false,urgent:false},
   {from:"HQ — Operations",subject:"Volcore V1 Firmware Update",body:"A critical firmware update for Volcore V1 terminals will be pushed this Sunday 2-4am. Your POS will be unavailable during this window. Please plan accordingly.",time:"2d ago",unread:false,urgent:false},
 ];
 
@@ -7731,14 +7731,14 @@ function renderRoyaltyFull() {
     </div>
     <div style="background:var(--card);border:1px solid var(--rim);border-radius:var(--r);padding:16px">
       <div style="font-size:10px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--txt3);margin-bottom:12px">Royalty Calculation</div>
-      ${[["Gross Sales Today","$"+loc.revenue_today.toLocaleString()],["Royalty Rate",loc.royalty_rate+"%"],["Royalty Amount","$"+loc.royalty_today],["Settlement Method","ACH — PioneerePay"],["Settlement Day","Every Monday 6am"],["YTD Total","$"+(loc.royalty_month*5.2).toFixed(0)]].map(([l,v])=>`
+      ${[["Gross Sales Today","$"+loc.revenue_today.toLocaleString()],["Royalty Rate",loc.royalty_rate+"%"],["Royalty Amount","$"+loc.royalty_today],["Settlement Method","ACH — North American Bancard"],["Settlement Day","Every Monday 6am"],["YTD Total","$"+(loc.royalty_month*5.2).toFixed(0)]].map(([l,v])=>`
       <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--rim);font-size:11px">
         <span style="color:var(--txt3)">${l}</span>
         <span style="font-family:'JetBrains Mono',monospace;font-weight:600">${v}</span>
       </div>`).join("")}
     </div>
     <div style="background:var(--gold-dim);border:1px solid rgba(212,175,55,0.2);border-radius:var(--r-sm);padding:12px;font-size:11px;color:var(--txt2)">
-      📋 Royalties are automatically calculated from gross POS sales and reported to TunaPOS HQ daily. Settlement occurs every Monday via ACH through PioneerePay. Questions? Contact finance@tunapos.com
+      📋 Royalties are automatically calculated from gross POS sales and reported to TunaPOS HQ daily. Settlement occurs every Monday via ACH through North American Bancard. Questions? Contact finance@tunapos.com
     </div>`;
 }
 
@@ -7924,7 +7924,7 @@ const TIER_CONFIG = {
   brewery:    { name:'BREWERY',        desc:'Brewery Tap Room + Bar · craft focus',                   emoji:'🍺', depts:['brewery','bar'] },
   rooftop:    { name:'ROOFTOP VENUE',  desc:'Rooftop + Bar + Coffee · premium terrace',               emoji:'🌇', depts:['rooftop','bar','coffee'] },
   restaurant: { name:'RESTAURANT',     desc:'Full dining · Kitchen, Bar, Sushi, Coffee, Brunch',      emoji:'🍽️', depts:['kitchen','bar','sushi','coffee','brunch'] },
-  full:       { name:'FULL ENTERPRISE',desc:'All depts · dynamic pricing · AI · Brewery + Rooftop',  emoji:'⚡', depts:['kitchen','bar','sushi','coffee','brewery','rooftop','brunch'] },
+  full:       { name:'COMMAND CENTER',desc:'All depts · dynamic pricing · AI · Brewery + Rooftop',  emoji:'⚡', depts:['kitchen','bar','sushi','coffee','brewery','rooftop','brunch'] },
 };
 
 const SURGE_MULT = 1.12;
@@ -8118,7 +8118,7 @@ let sessionOrders=[...SESSION_ORDERS];
 const KDS_TICKETS=[{id:1,table:"Table 3",station:"kitchen",lines:[{q:1,n:"Ribeye 8oz",m:"Med rare, Chimichurri"},{q:2,n:"Grilled Chicken",m:"Rice, BBQ"}],ts:Date.now()-420000},{id:2,table:"Bar 2",station:"bar",lines:[{q:2,n:"Old Fashioned",m:"Big cube, Double"},{q:1,n:"Margarita",m:"Rocks, Salted"}],ts:Date.now()-180000},{id:3,table:"Table 1",station:"sushi",lines:[{q:1,n:"Spicy Tuna Roll",m:"Extra hot, Sesame"},{q:3,n:"California Roll",m:"Ginger"}],ts:Date.now()-60000},{id:4,table:"Table 5",station:"kitchen",lines:[{q:1,n:"Pasta Carbonara",m:"Extra bacon"}],ts:Date.now()-660000},{id:5,table:"Table 7",station:"expo",lines:[{q:2,n:"NY Strip 12oz",m:"Well done"},{q:1,n:"Latte",m:"Large, Oat, Iced"}],ts:Date.now()-300000}];
 let kdsTickets=[...KDS_TICKETS];
 const POS_SCREENS=['order','kds','intel','reports','loyalty','inventory'];
-const TITLES_MAP={order:'New Order',kds:'Kitchen Display',intel:'Neural Intelligence',reports:'Analytics & Reports',loyalty:'Guest Loyalty Engine',inventory:'Inventory & IoT'};
+const TITLES_MAP={order:'New Order',kds:'Kitchen Display',intel:'Tuna AI',reports:'Analytics & Reports',loyalty:'Guest Loyalty Engine',inventory:'Inventory & IoT'};
 function POS_goto(id){POS_SCREENS.forEach(s=>{document.getElementById('sb-'+s).classList.toggle('on',s===id);document.getElementById('ni-'+s)?.classList.toggle('on',s===id);document.getElementById('st-'+s)?.classList.toggle('on',s===id);});document.getElementById('top-title').textContent=TITLES_MAP[id]||id;if(id==='kds')renderKDS();if(id==='intel')renderIntel();if(id==='reports')renderReports();if(id==='loyalty')renderLoyalty();if(id==='inventory')renderInventory(INVENTORY_DATA);}
 function buildTables(){const g=document.getElementById('table-grid');g.innerHTML='';const tables=[{n:'T-1',st:'active'},{n:'T-2',st:'busy'},{n:'T-3',st:'busy'},{n:'T-4',st:''},{n:'T-5',st:'busy'},{n:'T-6',st:''},{n:'T-7',st:'flag'},{n:'T-8',st:''},{n:'Bar',st:'busy'}];tables.forEach(t=>{const d=document.createElement('div');d.className='tbl-cell'+(t.n===activeTable?' active':t.st?' '+t.st:'');d.innerHTML=`<span class="tbl-num">${t.n.replace('T-','')}</span>${t.st||'—'}`;d.onclick=()=>{activeTable=t.n;buildTables();masterToast('Table '+t.n+' selected','info')};g.appendChild(d);});}
 function openModal(item){pendingItem=item;pendingMods={};document.getElementById('mn-name').textContent=item.name;document.getElementById('mn-price').textContent='$'+item.price.toFixed(2);const body=document.getElementById('mn-body');body.innerHTML='';const mods=item.mods||{};if(!Object.keys(mods).length){confirmAdd();return;}Object.entries(mods).forEach(([grp,opts])=>{const g=document.createElement('div');g.innerHTML=`<div class="mg-label">${grp}</div><div class="mg-opts" id="mgo-${grp.replace(/\s/g,'_')}"></div>`;body.appendChild(g);const row=g.querySelector('.mg-opts');opts.forEach(opt=>{const btn=document.createElement('button');btn.className='mg-opt';btn.textContent=opt;btn.onclick=()=>{row.querySelectorAll('.mg-opt').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');pendingMods[grp]=opt};row.appendChild(btn);});if(opts.length){row.firstChild.classList.add('sel');pendingMods[grp]=opts[0];}});const nw=document.createElement('div');nw.innerHTML='<div class="mg-label">Special Instructions</div><textarea class="modal-notes" id="m-notes" placeholder="Allergies, preferences…"></textarea>';body.appendChild(nw);document.getElementById('mod-modal').classList.add('open');}
@@ -8158,8 +8158,8 @@ function POS_tick(){const n=new Date();document.getElementById('clock').textCont
 
 // ── KILLER FEATURES ──
 function startVoiceOrder(){if('SpeechRecognition' in window||'webkitSpeechRecognition' in window){const r=new(window.SpeechRecognition||window.webkitSpeechRecognition)();r.lang='en-US';r.onstart=()=>masterToast('🎤 Listening...','info');r.onresult=(e)=>{const s=e.results[0][0].transcript.toLowerCase();const c=Math.round(e.results[0][0].confidence*100);masterToast(`🗣️ Heard: "${s}" (${c}%)`,'info');};r.onerror=(e)=>masterToast(`🎤 Error: ${e.error}`,'err');r.start();}else{masterToast('🎤 Voice not supported','err');}}
-function cloneVenueDNA(){const v=document.getElementById('venue-sel').value;const n=prompt('Clone operations to new venue:');if(n)masterToast(`🧬 DNA Clone: "${v}" → "${n}"`,'ok');}
-function printVocoraThermal(){if(!cart.length){masterToast('❌ No order to print','err');return;}masterToast('📠 Vocora thermal: Connecting...','info');setTimeout(()=>masterToast('📠 Receipt printing (Volcora ESC/POS via 10.0.0.2:9100)','ok'),1000);}
+function cloneVenueDNA(){const v=document.getElementById('venue-sel').value;const n=prompt('Clone operations to new venue:');if(n)masterToast(`🧬 Tuna AI: "${v}" → "${n}"`,'ok');}
+function printPrinterThermal(){if(!cart.length){masterToast('❌ No order to print','err');return;}masterToast('📠 Printer thermal: Connecting...','info');setTimeout(()=>masterToast('📠 Receipt printing (Hardware ESC/POS via 10.0.0.2:9100)','ok'),1000);}
 
 // ── INIT ──
 buildTables();
@@ -8174,7 +8174,7 @@ setTimeout(()=>{
   // Voice button
   if(!document.getElementById('voice-btn')){const btn=document.createElement('div');btn.id='voice-btn';btn.innerHTML='🎤';btn.style.cssText='position:fixed;bottom:30px;right:30px;width:68px;height:68px;background:linear-gradient(135deg,#7b2fff,#00d4ff);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 0 30px rgba(123,47,255,0.8);cursor:pointer;z-index:999;border:2px solid #00d4ff';btn.onclick=startVoiceOrder;document.body.appendChild(btn);}
   // Agent menu
-  const cb=document.querySelector('.checkout-bar');if(cb&&!document.getElementById('killer-menu')){const m=document.createElement('div');m.id='killer-menu';m.style.cssText='margin-bottom:8px;display:grid;grid-template-columns:1fr 1fr;gap:4px';m.innerHTML=`<button onclick="cloneVenueDNA()" style="padding:6px;border-radius:var(--r-xs);border:1px solid var(--rim);background:transparent;color:var(--txt2);font-size:10px;font-weight:600;cursor:pointer">🧬 DNA Clone</button><button onclick="printVocoraThermal()" style="padding:6px;border-radius:var(--r-xs);border:1px solid var(--rim);background:transparent;color:var(--txt2);font-size:10px;font-weight:600;cursor:pointer">📠 Vocora Print</button>`;cb.insertBefore(m,cb.firstChild);}
+  const cb=document.querySelector('.checkout-bar');if(cb&&!document.getElementById('killer-menu')){const m=document.createElement('div');m.id='killer-menu';m.style.cssText='margin-bottom:8px;display:grid;grid-template-columns:1fr 1fr;gap:4px';m.innerHTML=`<button onclick="cloneVenueDNA()" style="padding:6px;border-radius:var(--r-xs);border:1px solid var(--rim);background:transparent;color:var(--txt2);font-size:10px;font-weight:600;cursor:pointer">🧬 Tuna AI</button><button onclick="printPrinterThermal()" style="padding:6px;border-radius:var(--r-xs);border:1px solid var(--rim);background:transparent;color:var(--txt2);font-size:10px;font-weight:600;cursor:pointer">📠 Print Receipt</button>`;cb.insertBefore(m,cb.firstChild);}
   console.log('%c🚀 TunaPOS — Smart Menu + Killer Mode Ready','color:#00d4ff;font-size:14px;font-weight:bold');
 },500);
 
@@ -8266,8 +8266,8 @@ const SETTINGS_DATA = {
     {lbl:"Happy Hour Discount",desc:"Automatic discount during happy hour window",val:false,type:"toggle"},
     {lbl:"Rounding",desc:"Round totals to nearest cent",val:"$0.01",type:"select",opts:["$0.01","$0.05","$0.10","$0.25","$1.00"]},
   ]},
-  payments:{title:"Payment Processing",sub:"PioneerePay integration and payment methods",rows:[
-    {lbl:"Gateway",desc:"Primary payment processor",val:"PioneerePay",type:"input"},
+  payments:{title:"Payment Processing",sub:"North American Bancard integration and payment methods",rows:[
+    {lbl:"Gateway",desc:"Primary payment processor",val:"North American Bancard",type:"input"},
     {lbl:"Merchant ID",desc:"Your NABC merchant identifier",val:"TUNAPOS-ENT-****",type:"input"},
     {lbl:"Terminal ID",desc:"Volcore V1 terminal authorization code",val:"TID-VOL-****",type:"input"},
     {lbl:"Tap-to-Pay (NFC)",desc:"Apple Pay, Google Pay, Samsung Pay",val:true,type:"toggle"},
@@ -8278,8 +8278,8 @@ const SETTINGS_DATA = {
     {lbl:"Biometric Pay",desc:"Fingerprint/facial payment verification",val:true,type:"toggle"},
     {lbl:"Settlement",desc:"Automatic ACH settlement schedule",val:"Daily — Next Business Day",type:"select",opts:["Daily — Next Business Day","Weekly — Monday","Bi-weekly"]},
   ]},
-  receipts:{title:"Receipts & Printing",sub:"Volcora built-in ESC/POS printer and receipt configuration",rows:[
-    {lbl:"Printer Model",desc:"Connected thermal receipt printer",val:"Volcora Built-in ESC/POS Ethernet",type:"input"},
+  receipts:{title:"Receipts & Printing",sub:"Hardware built-in ESC/POS printer and receipt configuration",rows:[
+    {lbl:"Printer Model",desc:"Connected thermal receipt printer",val:"Hardware Built-in ESC/POS Ethernet",type:"input"},
     {lbl:"Printer IP",desc:"Local network IP address of printer",val:"10.0.0.2",type:"input"},
     {lbl:"Auto-Print Receipt",desc:"Automatically print after every payment",val:false,type:"toggle"},
     {lbl:"Email Receipt",desc:"Send digital receipt to guest email",val:true,type:"toggle"},
@@ -8287,7 +8287,7 @@ const SETTINGS_DATA = {
     {lbl:"Logo on Receipt",desc:"Print TunaPOS logo on receipts",val:true,type:"toggle"},
     {lbl:"Receipt Footer",desc:"Custom message at bottom of receipt",val:"Thank you for dining with us!",type:"input"},
   ]},
-  neural:{title:"Neural Intelligence Engine",sub:"AI-powered pricing, predictions, and behavioral analytics",rows:[
+  neural:{title:"Tuna AI Engine",sub:"AI-powered pricing, predictions, and behavioral analytics",rows:[
     {lbl:"Neural Engine",desc:"Master on/off for all AI features",val:true,type:"toggle"},
     {lbl:"Smart Picks",desc:"AI-curated menu recommendations per session",val:true,type:"toggle"},
     {lbl:"Behavioral Analysis",desc:"Guest mood and behavior pattern tracking",val:true,type:"toggle"},
@@ -9175,8 +9175,8 @@ function saveReceiptConfig() {
 }
 
 function printTestReceipt() {
-  masterToast('Test receipt sent to Volcora 10.0.0.2:9100', 'info');
-  // In production: POST to /api/print/vocora with receipt lines
+  masterToast('Test receipt sent to Hardware 10.0.0.2:9100', 'info');
+  // In production: POST to /api/print/printer with receipt lines
 }
 
 
@@ -9509,7 +9509,7 @@ function simulateNABCConnect() {
       badge.textContent = '✓ GATEWAY READY';
       badge.className = 'nabc-ready';
       txt.textContent = 'Credentials loaded · All terminals authorized · Processing active';
-      masterToast('PioneerePay — Gateway connected!', 'ok');
+      masterToast('North American Bancard — Gateway connected!', 'ok');
     }
   }, 8000); // simulates connecting after 8s for demo
 }
@@ -9533,7 +9533,7 @@ simulateNABCConnect();
 
 console.log('%c🏢 TunaPOS Franchise HQ — Loaded','color:#00d4ff;font-size:14px;font-weight:bold');
 console.log('%c🌐 Nationwide · 12 locations · 3 brands · 34 Volcore terminals','color:#00ff9d;font-size:11px');
-console.log('%c💳 PioneerePay — connecting tomorrow','color:#ffb547;font-size:11px');
+console.log('%c💳 North American Bancard — connecting tomorrow','color:#ffb547;font-size:11px');
 
 } catch(e) { console.warn("hq module error:", e.message); }
 
@@ -10846,12 +10846,12 @@ function NABC_tick(){ document.getElementById('clock').textContent=new Date().to
 setInterval(NABC_tick,1000); NABC_tick();
 
 // ── INIT ──────────────────────────────────────────────────────────
-addLog('ok','PioneerePay Payment Gateway — TunaPOS integration ready');
+addLog('ok','North American Bancard Payment Gateway — TunaPOS integration ready');
 addLog('warn','Step 1: Enter CUST_NBR, MERCH_NBR, DBA_NBR, TERMINAL_NBR from NABC dashboard');
 addLog('warn','Step 2: Enter EPI Key (shared secret for HMAC-SHA256 signing)');
 addLog('info','Step 3: Save credentials → Test Connection → process sandbox transactions');
 addLog('info','Signing method: HMAC-SHA256(endpoint + JSON_payload, epiKey) per EPX spec');
-console.log('%c💳 TunaPOS PioneerePay — EPX API v2','color:#4d9fff;font-size:14px;font-weight:bold');
+console.log('%c💳 TunaPOS North American Bancard — EPX API v2','color:#4d9fff;font-size:14px;font-weight:bold');
 console.log('%cSpec-accurate: HMAC-SHA256 | code 00 approval | reference always returned','color:#00ff9d;font-size:11px');
 
 } catch(e) { console.warn("nabc module error:", e.message); }
@@ -10909,7 +10909,7 @@ const STAFF_DATA = [
 const HQ_MESSAGES = [
   {from:"HQ — Brand Team",subject:"New Seasonal Menu — Summer 2025",body:"Please review the attached Summer 2025 menu additions. These will be mandatory from June 15. Items include: Tuna Poke Bowl ($18), Mango Margarita ($13), and Summer Salad ($12). Approve in your portal by June 10.",time:"2h ago",unread:true,urgent:false},
   {from:"HQ — Compliance",subject:"Compliance Score Alert",body:"Your location compliance score has dropped from 94% to 91%. Primary issue: two servers completed alcohol training but certifications not uploaded. Please upload within 48 hours to avoid flag.",time:"6h ago",unread:true,urgent:true},
-  {from:"HQ — Finance",subject:"Royalty Settlement Confirmation",body:"This week's royalty settlement of $3,138.00 has been processed via PioneerePay ACH. Funds will transfer to HQ account by Monday 6am. Thank you for your continued partnership.",time:"1d ago",unread:false,urgent:false},
+  {from:"HQ — Finance",subject:"Royalty Settlement Confirmation",body:"This week's royalty settlement of $3,138.00 has been processed via North American Bancard ACH. Funds will transfer to HQ account by Monday 6am. Thank you for your continued partnership.",time:"1d ago",unread:false,urgent:false},
   {from:"HQ — Operations",subject:"Volcore V1 Firmware Update",body:"A critical firmware update for Volcore V1 terminals will be pushed this Sunday 2-4am. Your POS will be unavailable during this window. Please plan accordingly.",time:"2d ago",unread:false,urgent:false},
 ];
 
@@ -11215,14 +11215,14 @@ function renderRoyaltyFull() {
     </div>
     <div style="background:var(--card);border:1px solid var(--rim);border-radius:var(--r);padding:16px">
       <div style="font-size:10px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--txt3);margin-bottom:12px">Royalty Calculation</div>
-      ${[["Gross Sales Today","$"+loc.revenue_today.toLocaleString()],["Royalty Rate",loc.royalty_rate+"%"],["Royalty Amount","$"+loc.royalty_today],["Settlement Method","ACH — PioneerePay"],["Settlement Day","Every Monday 6am"],["YTD Total","$"+(loc.royalty_month*5.2).toFixed(0)]].map(([l,v])=>`
+      ${[["Gross Sales Today","$"+loc.revenue_today.toLocaleString()],["Royalty Rate",loc.royalty_rate+"%"],["Royalty Amount","$"+loc.royalty_today],["Settlement Method","ACH — North American Bancard"],["Settlement Day","Every Monday 6am"],["YTD Total","$"+(loc.royalty_month*5.2).toFixed(0)]].map(([l,v])=>`
       <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--rim);font-size:11px">
         <span style="color:var(--txt3)">${l}</span>
         <span style="font-family:'JetBrains Mono',monospace;font-weight:600">${v}</span>
       </div>`).join("")}
     </div>
     <div style="background:var(--gold-dim);border:1px solid rgba(212,175,55,0.2);border-radius:var(--r-sm);padding:12px;font-size:11px;color:var(--txt2)">
-      📋 Royalties are automatically calculated from gross POS sales and reported to TunaPOS HQ daily. Settlement occurs every Monday via ACH through PioneerePay. Questions? Contact finance@tunapos.com
+      📋 Royalties are automatically calculated from gross POS sales and reported to TunaPOS HQ daily. Settlement occurs every Monday via ACH through North American Bancard. Questions? Contact finance@tunapos.com
     </div>`;
 }
 
@@ -11755,7 +11755,7 @@ console.log('%cPOS · Back Office · Receipt Studio · Inventory · Split Check 
 </script>
 
 
-<!-- TunaPOS Volcora Mode Controller: Cashier / Manager / Enterprise -->
+<!-- TunaPOS Mode Controller: Cashier / Manager / Enterprise -->
 <style id="tunapos-volcora-modes">
   :root{ --mode-blue:#00d4ff; --mode-green:#00ff9d; --mode-gold:#d4af37; }
   #tp-mode-switcher{
@@ -11859,7 +11859,7 @@ console.log('%cPOS · Back Office · Receipt Studio · Inventory · Split Check 
     document.body.classList.add('tp-'+mode);
     localStorage.setItem('tunapos_mode', mode);
     var chip=document.getElementById('tp-mode-chip');
-    if(chip) chip.textContent = mode==='cashier' ? 'CASHIER MODE · FAST ORDERING' : mode==='manager' ? 'MANAGER MODE · REPORTS / LOYALTY / INVENTORY' : 'ENTERPRISE MODE · FULL NEURAL INTELLIGENCE';
+    if(chip) chip.textContent = mode==='cashier' ? '' : mode==='manager' ? 'MANAGER MODE · REPORTS / LOYALTY / INVENTORY' : 'ENTERPRISE MODE · FULL NEURAL INTELLIGENCE';
     document.querySelectorAll('#tp-mode-switcher button').forEach(function(b){b.classList.toggle('on', b.dataset.mode===mode);});
     if(mode==='cashier') safeGoto('order');
     if(mode==='manager') safeGoto('reports');
@@ -11955,7 +11955,7 @@ console.log('%cPOS · Back Office · Receipt Studio · Inventory · Split Check 
 
 
 
-<!-- TunaPOS Manager Controls + Clean Volcora UI Patch -->
+<!-- TunaPOS Manager Controls + Clean Hardware UI Patch -->
 <style id="tunapos-manager-control-clean-css">
   /* Clean bottom area: nothing may cover Charge/Payment controls */
   #tp-mode-chip{display:none!important;}
@@ -12017,7 +12017,7 @@ console.log('%cPOS · Back Office · Receipt Studio · Inventory · Split Check 
   function renderVoids(){return header('Voids','Cancel unpaid or unsettled transactions before batch settlement')+kpis([{label:'Voids Today',value:'12',warn:true},{label:'Training Orders',value:'4'},{label:'Wrong Table',value:'3'},{label:'Duplicate Tickets',value:'2'},{label:'Risk Review',value:'3',warn:true}])+`<div class="tmc-grid"><div class="tmc-panel"><h3>Void Transaction</h3><div class="tmc-form"><div class="tmc-field"><label>Order ID</label><input value="ORD-VOID1"></div><div class="tmc-field"><label>Void Reason</label><select><option>Wrong Order</option><option>Duplicate Order</option><option>Training Order</option><option>Wrong Table</option><option>Kitchen Error</option></select></div><div class="tmc-field"><label>Manager PIN</label><input type="password" placeholder="Required"></div><div class="tmc-field"><label>Notify Kitchen?</label><select><option>Yes - send cancellation</option><option>No</option></select></div></div><br><button class="tmc-btn danger" onclick="TunaManagerControl.approve('Void saved to audit log')">Approve Void</button></div><div class="tmc-panel"><h3>Void Review Queue</h3><div class="tmc-alert high"><b>Marcus J. · 3 voids in 2 hours</b>Above normal pattern · AI review recommended</div><div class="tmc-alert med"><b>Bar-2 duplicate ticket</b>Void before settlement · no refund needed</div></div></div>`}
   function renderAdjustments(){return header('Adjustments','Discounts, comps, price overrides, tax/tip corrections, and manager approvals')+kpis([{label:'Discounts',value:'$214'},{label:'Comps',value:'$82',warn:true},{label:'Price Overrides',value:'7',warn:true},{label:'Tip Corrections',value:'4'},{label:'Tax Adjustments',value:'1'}])+`<div class="tmc-panel"><h3>New Adjustment</h3><div class="tmc-form"><div class="tmc-field"><label>Order ID</label><input value="ORD-9E12C"></div><div class="tmc-field"><label>Adjustment Type</label><select><option>Discount</option><option>Comp</option><option>Price Override</option><option>Tax Adjustment</option><option>Tip Adjustment</option></select></div><div class="tmc-field"><label>Amount / Percent</label><input value="20%"></div><div class="tmc-field"><label>Reason</label><select><option>VIP Guest</option><option>Service Recovery</option><option>Staff Meal</option><option>Manager Override</option><option>Promotion</option></select></div><div class="tmc-field"><label>Manager PIN</label><input type="password" placeholder="Required"></div><div class="tmc-field"><label>Audit Level</label><select><option>Normal</option><option>High - Owner Review</option></select></div></div><br><button class="tmc-btn primary" onclick="TunaManagerControl.approve('Adjustment approved and logged')">Apply Adjustment</button></div>`}
   function renderAudit(){return header('Audit Log','Permanent record of refunds, voids, discounts, overrides, chargebacks, and fraud alerts')+kpis([{label:'Audit Events',value:'428'},{label:'High Risk',value:'9',warn:true},{label:'Manager Overrides',value:'31'},{label:'Owner Review',value:'4',warn:true},{label:'Export Ready',value:'CSV/PDF'}])+`<div class="tmc-panel tmc-full"><h3>Immutable Audit Trail</h3><table class="tmc-table"><thead><tr><th>Time</th><th>User</th><th>Action</th><th>Reference</th><th>Amount</th><th>Reason</th><th>Status</th></tr></thead><tbody>${audit.map(a=>`<tr><td>${a[0]}</td><td>${a[1]}</td><td>${a[2]}</td><td class="tmc-id">${a[3]}</td><td>${a[4]}</td><td>${a[5]}</td><td><span class="tmc-status ${a[6]==='Escalated'?'tmc-voided':'tmc-approved'}">${a[6]}</span></td></tr>`).join('')}</tbody></table></div>`}
-  function renderChargebacks(){return header('Chargebacks','Track disputes and evidence for PioneerEpay / processor workflows')+kpis([{label:'Open Cases',value:'3',warn:true},{label:'Pending Evidence',value:'2',warn:true},{label:'Won Rate',value:'78%',cls:'tmc-good'},{label:'At Risk',value:'$486',warn:true},{label:'Avg Resolution',value:'12d'}])+`<div class="tmc-grid"><div class="tmc-panel"><h3>Chargeback Cases</h3><table class="tmc-table"><tr><th>Case</th><th>Order</th><th>Amount</th><th>Reason</th><th>Status</th></tr><tr><td class="tmc-id">CB-2041</td><td>ORD-9E12C</td><td>$144.94</td><td>Cardholder dispute</td><td><span class="tmc-status tmc-open">Evidence Due</span></td></tr><tr><td class="tmc-id">CB-2034</td><td>ORD-3C44B</td><td>$23.76</td><td>Duplicate</td><td><span class="tmc-status tmc-approved">Submitted</span></td></tr></table></div><div class="tmc-panel"><h3>Evidence Packet</h3><div class="tmc-alert low"><b>Auto-collected</b>Receipt, payment method, timestamp, server, table, items, guest history.</div><button class="tmc-btn primary" onclick="TunaManagerControl.approve('Evidence packet prepared')">Prepare Evidence</button> <button class="tmc-btn">Export PDF</button></div></div>`}
+  function renderChargebacks(){return header('Chargebacks','Track disputes and evidence for Pioneer Enterprise Solutions / processor workflows')+kpis([{label:'Open Cases',value:'3',warn:true},{label:'Pending Evidence',value:'2',warn:true},{label:'Won Rate',value:'78%',cls:'tmc-good'},{label:'At Risk',value:'$486',warn:true},{label:'Avg Resolution',value:'12d'}])+`<div class="tmc-grid"><div class="tmc-panel"><h3>Chargeback Cases</h3><table class="tmc-table"><tr><th>Case</th><th>Order</th><th>Amount</th><th>Reason</th><th>Status</th></tr><tr><td class="tmc-id">CB-2041</td><td>ORD-9E12C</td><td>$144.94</td><td>Cardholder dispute</td><td><span class="tmc-status tmc-open">Evidence Due</span></td></tr><tr><td class="tmc-id">CB-2034</td><td>ORD-3C44B</td><td>$23.76</td><td>Duplicate</td><td><span class="tmc-status tmc-approved">Submitted</span></td></tr></table></div><div class="tmc-panel"><h3>Evidence Packet</h3><div class="tmc-alert low"><b>Auto-collected</b>Receipt, payment method, timestamp, server, table, items, guest history.</div><button class="tmc-btn primary" onclick="TunaManagerControl.approve('Evidence packet prepared')">Prepare Evidence</button> <button class="tmc-btn">Export PDF</button></div></div>`}
   function renderReturns(){return header('Advanced Return Analytics','Understand refund causes, cost impact, employee patterns, and location risk')+kpis([{label:'Refund Rate',value:'1.7%'},{label:'Void Rate',value:'2.9%',warn:true},{label:'Comp Rate',value:'1.1%'},{label:'Top Reason',value:'Kitchen'},{label:'Loss Impact',value:'$1,284',warn:true}])+`<div class="tmc-grid"><div class="tmc-panel"><h3>Refund Reasons</h3>${[['Kitchen Error',32],['Wrong Item',21],['Guest Complaint',18],['Duplicate Charge',12],['Training Error',9]].map(x=>`<div style="display:grid;grid-template-columns:130px 1fr 40px;gap:10px;align-items:center;margin:12px 0"><span>${x[0]}</span><div class="tmc-risk"><span style="width:${x[1]*2}%"></span></div><b>${x[1]}%</b></div>`).join('')}</div><div class="tmc-panel"><h3>Operational Insight</h3><div class="tmc-alert high"><b>Kitchen Error trend rising</b>32% of refunds tied to kitchen timing or preparation issues.</div><div class="tmc-alert med"><b>Recommended action</b>Review station routing and add expo verification during 6–8pm rush.</div></div></div>`}
   function renderFraud(){return header('AI Refund Fraud Detection','Behavioral analysis across refunds, voids, discounts, and manager overrides')+kpis([{label:'Fraud Risk Score',value:'76',warn:true},{label:'Flagged Staff',value:'2',warn:true},{label:'Flagged Orders',value:'9',warn:true},{label:'Auto Alerts',value:'5'},{label:'Estimated Loss',value:'$420',warn:true}])+`<div class="tmc-grid"><div class="tmc-panel"><h3>High Risk Alerts</h3><div class="tmc-alert high"><b>Cashier John · Risk 92</b>8 refunds in 2 hours. Normal average: 1. Requires GM review.</div><div class="tmc-alert med"><b>Manager Override Spike</b>Sarah M. approved $2,450 refunds this week vs $380 store average.</div><div class="tmc-alert low"><b>Pattern Cleared</b>Training order voids match approved onboarding session.</div></div><div class="tmc-panel"><h3>AI Controls</h3><div class="tmc-form"><div class="tmc-field"><label>Auto Escalate Above</label><input value="85"></div><div class="tmc-field"><label>Notify</label><select><option>GM + Owner</option><option>Owner Only</option><option>Corporate</option></select></div><div class="tmc-field"><label>Lock Refunds?</label><select><option>Manager PIN required</option><option>Owner PIN required above $100</option></select></div><div class="tmc-field"><label>Audit Mode</label><select><option>Strict</option><option>Standard</option></select></div></div><br><button class="tmc-btn primary" onclick="TunaManagerControl.approve('AI fraud controls updated')">Save AI Controls</button></div></div>`}
   const renderers={transactions:renderTransactions,refunds:renderRefunds,voids:renderVoids,adjustments:renderAdjustments,audit:renderAudit,chargebacks:renderChargebacks,returns:renderReturns,fraud:renderFraud};
@@ -12096,6 +12096,46 @@ console.log('%cPOS · Back Office · Receipt Studio · Inventory · Split Check 
   function injectButtons(){let cb=document.querySelector('.checkout-bar');if(!cb||document.getElementById('tp-tabs-actions'))return;let row=document.createElement('div');row.id='tp-tabs-actions';row.className='tp-tabs-btn-row';row.innerHTML='<button class="tp-tab-action-btn" onclick="TunaTabs.open()">🍺 Bar / Open Tabs</button><button class="tp-tab-action-btn house" onclick="TunaTabs.quickHouse()">🏠 House Account</button>';cb.insertBefore(row,cb.firstChild);}
   window.TunaTabs={open,close,create,quickHouse,view,addCart,loadToCart,addManual,closeTab,importCartPrompt};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',injectButtons);else injectButtons();setTimeout(injectButtons,500);setTimeout(injectButtons,1500);
+})();
+</script>
+
+
+
+<!-- TunaPOS Complete Ecosystem Add-On: Cashier Controls + Online Ordering + AI + Franchise Network -->
+<style>
+  .tuna-clean-mode-badge,.tuna-floating-mode,.full-enterprise,.enterprise-pill,.enterprise-status,#enterprise-status,#full-enterprise-bar{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+  #tuna-ecosystem-strip{position:fixed;right:14px;top:52px;z-index:9998;display:flex;gap:6px;align-items:center;background:rgba(5,10,18,.72);border:1px solid rgba(0,212,255,.18);border-radius:14px;padding:6px;backdrop-filter:blur(14px);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  #tuna-ecosystem-strip button{border:1px solid rgba(0,212,255,.28);background:rgba(15,23,42,.92);color:#93c5fd;border-radius:10px;padding:8px 10px;font:800 10px/1.1 Inter,system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+  #tuna-ecosystem-strip button.primary{background:linear-gradient(135deg,#00e5ff,#00ff9d);color:#061018;border-color:transparent}
+  #tuna-cashier-tools{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0 10px 0;clear:both;position:relative;z-index:5}.tuna-tool-btn{border:1px solid rgba(0,212,255,.28);background:rgba(15,23,42,.95);color:#dbeafe;border-radius:10px;padding:9px 6px;font:800 10px/1.1 Inter,system-ui,sans-serif;letter-spacing:.04em;cursor:pointer}.tuna-tool-btn.green{background:rgba(0,255,157,.10);border-color:rgba(0,255,157,.35);color:#00ff9d}.tuna-tool-btn.gold{background:rgba(255,181,71,.12);border-color:rgba(255,181,71,.42);color:#ffcf7a}.tuna-tool-btn.red{background:rgba(255,61,113,.10);border-color:rgba(255,61,113,.35);color:#ff6f9a}.tuna-tool-btn.blue{background:rgba(0,212,255,.10);border-color:rgba(0,212,255,.35);color:#22d3ee}
+  .tuna-modal{position:fixed;inset:0;z-index:20000;background:rgba(1,6,12,.82);display:none;align-items:center;justify-content:center;padding:18px}.tuna-modal.open{display:flex}.tuna-panel{width:min(1180px,96vw);max-height:90vh;overflow:auto;background:#0b1220;border:1px solid rgba(0,212,255,.25);border-radius:22px;box-shadow:0 30px 90px rgba(0,0,0,.65);color:#e5f3ff}.tuna-panel-h{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid rgba(148,163,184,.16)}.tuna-panel-h h2{margin:0;color:#00d4ff;font:900 20px/1.1 Syne,Inter,sans-serif;letter-spacing:.04em}.tuna-panel-h small{display:block;color:#64748b;margin-top:5px;font:700 10px/1.2 Inter}.tuna-close{background:rgba(255,61,113,.14);border:1px solid rgba(255,61,113,.42);color:#ff6f9a;border-radius:10px;padding:8px 12px;font-weight:900;cursor:pointer}.tuna-panel-b{padding:18px 20px}.tuna-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.tuna-card{background:rgba(15,23,42,.86);border:1px solid rgba(148,163,184,.14);border-radius:16px;padding:14px}.tuna-card h3{margin:0 0 6px;color:#fff;font:900 14px/1.2 Syne,Inter}.tuna-card p{margin:0;color:#8da2bf;font-size:12px;line-height:1.45}.tuna-kpi{font:900 28px/1 JetBrains Mono,monospace;color:#00ff9d;margin:8px 0}.tuna-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}.tuna-field label{display:block;color:#64748b;font:800 10px/1.2 Inter;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}.tuna-field input,.tuna-field select,.tuna-field textarea{width:100%;box-sizing:border-box;background:#111827;border:1px solid rgba(148,163,184,.2);border-radius:10px;color:#e5f3ff;padding:10px;font:700 12px Inter}.tuna-action{border:0;border-radius:12px;background:linear-gradient(135deg,#00d4ff,#00ff9d);color:#061018;padding:11px 14px;font:900 11px Inter;letter-spacing:.07em;text-transform:uppercase;cursor:pointer}.tuna-action.secondary{background:#111827;color:#93c5fd;border:1px solid rgba(0,212,255,.28)}.tuna-action.warn{background:linear-gradient(135deg,#ffb547,#ff7a00);color:#101827}.tuna-table{width:100%;border-collapse:collapse;margin-top:10px}.tuna-table th,.tuna-table td{padding:10px;border-bottom:1px solid rgba(148,163,184,.10);text-align:left;font-size:12px}.tuna-table th{color:#64748b;text-transform:uppercase;font-size:10px;letter-spacing:.08em}.tuna-badge{display:inline-flex;border-radius:999px;padding:4px 7px;background:rgba(0,255,157,.12);color:#00ff9d;font-weight:900;font-size:10px}.tuna-badge.warn{background:rgba(255,181,71,.14);color:#ffcf7a}.tuna-badge.risk{background:rgba(255,61,113,.14);color:#ff6f9a}@media(max-width:900px){.tuna-grid,.tuna-form{grid-template-columns:1fr 1fr}#tuna-ecosystem-strip{left:72px;right:10px;overflow-x:auto}.tuna-panel{width:98vw}.tuna-card{padding:12px}}@media(max-width:560px){.tuna-grid,.tuna-form{grid-template-columns:1fr}#tuna-cashier-tools{grid-template-columns:1fr}.tuna-panel-h{align-items:flex-start}.tuna-panel-h h2{font-size:16px}}
+</style>
+<div id="tuna-ecosystem-strip"><button class="primary" onclick="TunaEcosystem.open('online')">Online Ordering</button><button onclick="TunaEcosystem.open('ai')">Tuna AI</button><button onclick="TunaEcosystem.open('franchise')">Franchise Network</button></div>
+<div id="tuna-modal" class="tuna-modal" onclick="if(event.target.id==='tuna-modal')TunaEcosystem.close()"><div class="tuna-panel"><div class="tuna-panel-h"><div><h2 id="tuna-modal-title">TunaPOS</h2><small id="tuna-modal-sub">Enterprise commerce suite</small></div><button class="tuna-close" onclick="TunaEcosystem.close()">Close</button></div><div class="tuna-panel-b" id="tuna-modal-body"></div></div></div>
+<script>
+(function(){
+  function toast(msg,type){try{(window.masterToast||window.showToast||alert)(msg,type||'info')}catch(e){alert(msg)}}
+  function money(n){return '$'+Number(n||0).toFixed(2)}
+  function getCart(){try{return Array.isArray(window.cart)?window.cart:cart}catch(e){return []}}
+  function render(){try{if(typeof renderCart==='function')renderCart();if(typeof updateTotals==='function')updateTotals();}catch(e){}}
+  function audit(action,detail){try{let a=JSON.parse(localStorage.getItem('tunapos_audit_log')||'[]');a.unshift({time:new Date().toLocaleString(),action,detail});localStorage.setItem('tunapos_audit_log',JSON.stringify(a.slice(0,500)));}catch(e){}}
+  function pinRequired(label){let pin=prompt(label||'Manager PIN required:'); if(!pin){toast('Manager approval required','err');return false;} audit('Manager PIN',label||'Approval'); return true;}
+  function injectCashierTools(){let host=document.querySelector('.checkout-bar')||document.querySelector('.order-panel')||document.querySelector('#cart-lines-ctx')?.parentElement;if(!host||document.getElementById('tuna-cashier-tools'))return;let div=document.createElement('div');div.id='tuna-cashier-tools';div.innerHTML=`<button class="tuna-tool-btn green" onclick="TunaCashier.openItem()">+ Open Item</button><button class="tuna-tool-btn gold" onclick="TunaCashier.priceOverride()">Price Override</button><button class="tuna-tool-btn red" onclick="TunaCashier.noSale()">No Sale</button><button class="tuna-tool-btn blue" onclick="TunaCashier.splitTender()">Split Tender</button><button class="tuna-tool-btn" onclick="TunaTabs&&TunaTabs.open?TunaTabs.open():TunaCashier.tabsFallback()">Bar Tabs</button><button class="tuna-tool-btn" onclick="TunaTabs&&TunaTabs.quickHouse?TunaTabs.quickHouse():TunaCashier.tabsFallback()">House Account</button>`;host.insertBefore(div,host.firstChild)}
+  window.TunaCashier={
+    openItem(){let name=(prompt('Open Item / Custom Charge name:','Custom Charge')||'').trim();if(!name)return;let amount=parseFloat(prompt('Amount:','10.00'));if(!amount||amount<=0){toast('Invalid amount','err');return}if(amount>25&&!pinRequired('Manager PIN for Open Item over $25'))return;let cat=prompt('Category: Food, Bar, Service, Other','Other')||'Other';let taxable=confirm('Taxable item? OK = Yes, Cancel = No');let c=getCart();c.push({sku:'OPEN-'+Date.now(),name,price:amount,qty:1,mods:{Category:cat,Taxable:taxable?'Yes':'No'},notes:'Open Item'});audit('Open Item',`${name} · ${money(amount)} · ${cat}`);render();toast('Open Item added','ok')},
+    priceOverride(){let c=getCart();if(!c.length){toast('Cart is empty','err');return}let idx=Number(prompt('Line number to override. First item = 1','1'))-1;if(idx<0||idx>=c.length){toast('Invalid line','err');return}let old=Number(c[idx].price||0);let next=parseFloat(prompt(`New price for ${c[idx].name}:`,old.toFixed(2)));if(isNaN(next)||next<0){toast('Invalid price','err');return}if(!pinRequired('Manager PIN for Price Override'))return;let reason=prompt('Reason: VIP, service recovery, promotion, wrong price, other','Manager Override')||'Manager Override';c[idx].originalPrice=old;c[idx].price=next;c[idx].notes=(c[idx].notes?c[idx].notes+' · ':'')+`Override ${money(old)} → ${money(next)} · ${reason}`;audit('Price Override',`${c[idx].name}: ${money(old)} → ${money(next)} · ${reason}`);render();toast('Price override applied','ok')},
+    noSale(){let reason=prompt('No Sale reason:','Cash drawer open');if(!reason)return;if(!pinRequired('Manager PIN for No Sale'))return;audit('No Sale',reason);toast('No Sale logged. Cash drawer pulse queued for printer integration.','ok')},
+    splitTender(){let c=getCart();let sub=c.reduce((s,i)=>s+(Number(i.price)||0)*(Number(i.qty)||1),0);let total=sub*1.26;if(!c.length){toast('Cart is empty','err');return}let card=parseFloat(prompt('Card amount:',(total/2).toFixed(2)))||0;let cash=parseFloat(prompt('Cash amount:',(total-card).toFixed(2)))||0;let remaining=total-card-cash;audit('Split Tender',`Card ${money(card)} · Cash ${money(cash)} · Remaining ${money(remaining)}`);toast(`Split tender saved. Remaining ${money(Math.max(0,remaining))}`,'ok')},
+    tabsFallback(){toast('Tabs module is loading. Reopen in a second.','info')}
+  };
+  const screens={
+    online:{title:'Tuna Online Ordering',sub:'Direct pickup, delivery, QR table ordering, scheduled orders, loyalty, coupons',body:`<div class="tuna-grid"><div class="tuna-card"><h3>Online Store</h3><div class="tuna-kpi">LIVE</div><p>Restaurant-branded ordering page with pickup, delivery, curbside, and scheduled orders.</p></div><div class="tuna-card"><h3>Order Channels</h3><div class="tuna-kpi">4</div><p>Web, QR table ordering, kiosk handoff, and mobile order-ahead.</p></div><div class="tuna-card"><h3>Direct Revenue</h3><div class="tuna-kpi">0%</div><p>Reduce third-party dependency by routing orders straight into TunaPOS.</p></div><div class="tuna-card"><h3>Status</h3><div class="tuna-kpi">V1</div><p>Ready as UI layer; payment and dispatch rules connect after NABC.</p></div></div><div class="tuna-form"><div class="tuna-field"><label>Store URL</label><input value="yourrestaurant.com/order"></div><div class="tuna-field"><label>Service Mode</label><select><option>Pickup + Delivery</option><option>Pickup Only</option><option>QR Table Ordering</option></select></div><div class="tuna-field"><label>Menu Source</label><select><option>Use Active TunaPOS Menu</option><option>Online Only Menu</option></select></div><div class="tuna-field"><label>Prep Time</label><input value="20 minutes"></div><div class="tuna-field"><label>Delivery Zone</label><input value="5 miles"></div><div class="tuna-field"><label>Order Throttling</label><select><option>Auto throttle during rush</option><option>Manual</option></select></div></div><button class="tuna-action" onclick="TunaEcosystem.save('Online ordering settings saved')">Save Online Ordering</button><table class="tuna-table"><tr><th>Feature</th><th>Status</th><th>Notes</th></tr><tr><td>Pickup</td><td><span class="tuna-badge">Ready</span></td><td>Orders sync to POS/KDS.</td></tr><tr><td>QR Table Ordering</td><td><span class="tuna-badge warn">Configure</span></td><td>Assign QR codes to tables.</td></tr><tr><td>Delivery</td><td><span class="tuna-badge warn">Configure</span></td><td>Set zones, fees, and hours.</td></tr></table>`},
+    ai:{title:'Tuna AI',sub:'Agentic intelligence for revenue, guests, inventory, labor, refunds, and operations',body:`<div class="tuna-grid"><div class="tuna-card"><h3>Revenue Agent</h3><div class="tuna-kpi">92</div><p>Predicts demand, identifies upsell opportunities, and flags slow periods.</p></div><div class="tuna-card"><h3>Inventory Agent</h3><div class="tuna-kpi">88</div><p>Detects low stock, waste spikes, and reorder opportunities.</p></div><div class="tuna-card"><h3>Guest DNA Agent</h3><div class="tuna-kpi">96</div><p>Tracks preferences, visit patterns, VIPs, birthdays, and loyalty triggers.</p></div><div class="tuna-card"><h3>Fraud Agent</h3><div class="tuna-kpi">76</div><p>Monitors refunds, voids, discounts, no-sale events, and manager overrides.</p></div></div><table class="tuna-table"><tr><th>Recommendation</th><th>Priority</th><th>Expected Impact</th></tr><tr><td>Increase bartender staffing Friday 6–9 PM.</td><td><span class="tuna-badge warn">Medium</span></td><td>+$780 projected revenue</td></tr><tr><td>Review refund spike from Cashier John.</td><td><span class="tuna-badge risk">High</span></td><td>Fraud risk reduction</td></tr><tr><td>Promote Ribeye + Old Fashioned pairing.</td><td><span class="tuna-badge">Low</span></td><td>+12% avg ticket</td></tr></table><button class="tuna-action" onclick="TunaEcosystem.save('Tuna AI controls saved')">Save AI Controls</button> <button class="tuna-action secondary" onclick="TunaEcosystem.save('Human approval required for low-confidence AI actions')">Require Human Approval</button>`},
+    franchise:{title:'Tuna Franchise Network',sub:'Multi-location control, franchise governance, benchmark reporting, and corporate menu pushes',body:`<div class="tuna-grid"><div class="tuna-card"><h3>Locations</h3><div class="tuna-kpi">17</div><p>Multi-location revenue, labor, food cost, and performance rankings.</p></div><div class="tuna-card"><h3>Revenue Month</h3><div class="tuna-kpi">$342K</div><p>Corporate-level reporting across all stores.</p></div><div class="tuna-card"><h3>Food Cost</h3><div class="tuna-kpi">28%</div><p>Benchmark stores and identify cost spikes.</p></div><div class="tuna-card"><h3>Network Score</h3><div class="tuna-kpi">92</div><p>AI blended score for revenue, labor, inventory, guest, and compliance health.</p></div></div><table class="tuna-table"><tr><th>Location</th><th>Revenue</th><th>Labor</th><th>Food Cost</th><th>Status</th></tr><tr><td>Denver Downtown</td><td>$52,440</td><td>19%</td><td>27%</td><td><span class="tuna-badge">Strong</span></td></tr><tr><td>Denver Airport</td><td>$34,180</td><td>22%</td><td>31%</td><td><span class="tuna-badge warn">Watch</span></td></tr><tr><td>Boulder</td><td>$22,550</td><td>18%</td><td>26%</td><td><span class="tuna-badge">Strong</span></td></tr></table><div class="tuna-form"><div class="tuna-field"><label>Corporate Action</label><select><option>Push menu update</option><option>Push promotion</option><option>Lock pricing</option><option>Send alert</option></select></div><div class="tuna-field"><label>Locations</label><select><option>All locations</option><option>Selected region</option><option>Single location</option></select></div><div class="tuna-field"><label>Approval</label><select><option>Owner approval required</option><option>Corporate auto-push</option></select></div></div><button class="tuna-action" onclick="TunaEcosystem.save('Franchise network action queued')">Queue Corporate Action</button>`}
+  };
+  window.TunaEcosystem={open(key){let s=screens[key]||screens.online;document.getElementById('tuna-modal-title').textContent=s.title;document.getElementById('tuna-modal-sub').textContent=s.sub;document.getElementById('tuna-modal-body').innerHTML=s.body;document.getElementById('tuna-modal').classList.add('open')},close(){document.getElementById('tuna-modal').classList.remove('open')},save(msg){audit('Ecosystem',msg);toast(msg,'ok')}};
+  function cleanup(){document.querySelectorAll('*').forEach(el=>{let txt=(el.textContent||'').trim().toLowerCase(); if(txt==='full enterprise'||txt.startsWith('⚡ full enterprise')||txt.includes('full enterprise all depts')){el.style.display='none';}}); injectCashierTools();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',cleanup); else cleanup(); setTimeout(cleanup,500); setTimeout(cleanup,1500); setTimeout(cleanup,3000);
 })();
 </script>
 
